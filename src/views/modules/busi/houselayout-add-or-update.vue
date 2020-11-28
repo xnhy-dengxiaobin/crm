@@ -35,7 +35,12 @@
         <el-input v-model="dataForm.name" placeholder="图片名称"></el-input>
       </el-form-item>
       <el-form-item label="图片说明" prop="memo">
-        <el-input v-model="dataForm.memo" placeholder="图片说明"></el-input>
+        <el-input
+          type="textarea"
+          :rows="2"
+          v-model="dataForm.memo"
+          placeholder="图片说明"
+        ></el-input>
       </el-form-item>
       <el-form-item label="图片" prop="path">
         <el-upload
