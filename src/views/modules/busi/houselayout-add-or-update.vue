@@ -39,13 +39,16 @@
       </el-form-item>
       <el-form-item label="图片" prop="path">
         <el-upload
+          :with-credentials="true"
           :headers="headers"
+          name="uploads"
           :data="data"
           :action="uploadUrl"
           list-type="picture-card"
           :auto-upload="true"
           :limit="1"
           :on-success="hanldeSuccess"
+          :file-list="files"
         >
           <i slot="default" class="el-icon-plus"></i>
           <div slot="file" slot-scope="{ file }">
@@ -105,8 +108,8 @@ export default {
         path: "",
       },
       dataRule: {
-        projectName: [
-          { required: true, message: "项目不能为空", trigger: "blur" },
+        projectId: [
+          { required: true, message: "项目id不能为空", trigger: "blur" },
         ],
         name: [
           { required: true, message: "图片名称不能为空", trigger: "blur" },
@@ -121,7 +124,8 @@ export default {
       projects: [],
       headers: { token: Vue.cookie.get("token"), withCredentials: true },
       data: { dirId: "houseLayout" },
-      uploadUrl: `${window.SITE_CONFIG.baseUrl}/busi/busihouselayout/upload`,
+      files: [],
+      uploadUrl: `${window.SITE_CONFIG.baseUrl}/busi/houselayout/upload`,
       dialogImageUrl: "",
       dialogVisible: false,
       disabled: false,
@@ -133,19 +137,27 @@ export default {
       this.visible = true;
       this.$nextTick(() => {
         this.$refs["dataForm"].resetFields();
+        this.files = [];
         if (this.dataForm.id) {
           this.$http({
             url: this.$http.adornUrl(
-              `/busi/busihouselayout/info/${this.dataForm.id}`
+              `/busi/houselayout/info/${this.dataForm.id}`
             ),
             method: "get",
             params: this.$http.adornParams(),
           }).then(({ data }) => {
             if (data && data.code === 0) {
-              this.dataForm.projectId = data.busiHouseLayout.projectId;
-              this.dataForm.name = data.busiHouseLayout.name;
-              this.dataForm.memo = data.busiHouseLayout.memo;
-              this.dataForm.path = data.busiHouseLayout.path;
+              this.dataForm.projectId = data.houseLayout.projectId;
+              this.dataForm.projectName = data.houseLayout.projectName;
+              this.dataForm.name = data.houseLayout.name;
+              this.dataForm.memo = data.houseLayout.memo;
+              this.dataForm.path = data.houseLayout.path;
+              this.files = [
+                {
+                  name: this.dataForm.name,
+                  url: `${window.SITE_CONFIG.baseUrl}/uploads/${this.dataForm.path}`,
+                },
+              ];
             }
           });
         }
@@ -158,7 +170,7 @@ export default {
         if (valid) {
           this.$http({
             url: this.$http.adornUrl(
-              `/busi/busihouselayout/${!this.dataForm.id ? "save" : "update"}`
+              `/busi/houselayout/${!this.dataForm.id ? "save" : "update"}`
             ),
             method: "post",
             data: this.$http.adornData({
@@ -197,12 +209,15 @@ export default {
     },
     listProject(queryString, cb) {
       let results = this.projects.filter((p) => {
+        if (!queryString) {
+          return true;
+        }
         return p.name.indexOf(queryString) >= 0;
       });
       cb(results);
     },
     handleSelect(item) {
-      this.dataForm.proejctId = item.id;
+      this.dataForm.projectId = item.id;
       this.dataForm.projectName = item.name;
     },
     handleIconClick(ev) {
@@ -220,9 +235,7 @@ export default {
       console.log(file);
     },
     hanldeSuccess(response, file, fileList) {
-      console.log(response);
-      console.log(file);
-      console.log(fileList);
+      this.dataForm.path = response.files[0];
     },
   },
   mounted() {

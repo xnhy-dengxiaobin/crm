@@ -19,6 +19,7 @@ module.exports = {
     "generator-star-spacing": "off",
     semi: "off",
     quotes: "off",
+    indent: "off",
     "comma-dangle": "off",
     "space-before-function-paren": "off",
     // allow debugger during development
