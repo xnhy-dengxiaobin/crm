@@ -36,6 +36,12 @@
         label="用户名">
       </el-table-column>
       <el-table-column
+        prop="appRole"
+        header-align="center"
+        align="center"
+        label="APP角色">
+      </el-table-column>
+      <el-table-column
         prop="email"
         header-align="center"
         align="center"
