@@ -48,6 +48,7 @@ gulp.task("replace:cdnUrl", function() {
 });
 
 // 替换${versionPath}/static/config/index-${env}.js window.SITE_CONFIG['version']配置变量
+// TODO: 有bug，这里替换不了，需要打包后手动替换
 gulp.task("replace:version", function() {
   return gulp
     .src(`${versionPath}/static/config/index-${env}.js`)
