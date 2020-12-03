@@ -160,7 +160,7 @@ export default {
               this.files = [
                 {
                   name: this.dataForm.name,
-                  url: `${window.SITE_CONFIG.baseUrl}/uploads/${this.dataForm.path}`,
+                  url: `${window.SITE_CONFIG.baseUrl}/busi/houselayout/downloadFP/${this.dataForm.path}`,
                 },
               ];
             }
