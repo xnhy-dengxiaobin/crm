@@ -45,6 +45,24 @@
       <el-form-item label="手机号" prop="mobile">
         <el-input v-model="dataForm.mobile" placeholder="手机号"></el-input>
       </el-form-item>
+
+      <el-form-item label="关联项目" prop="projectIds">
+        <el-select
+          style="width: 100%"
+          v-model="dataForm.projectIds"
+          filterable
+          multiple
+          placeholder="请选择项目名称"
+        >
+          <el-option
+            v-for="project in projects"
+            :key="project.id"
+            :label="project.name"
+            :value="project.id"
+          >
+          </el-option>
+        </el-select>
+      </el-form-item>
       <el-form-item label="头像" prop="path">
         <el-upload
           :with-credentials="true"
@@ -95,7 +113,12 @@
       </el-form-item>
       <el-form-item label="APP角色" size="mini" prop="appRole">
         <el-radio-group v-model="dataForm.appRole">
-          <el-radio v-for="role in appRoleList" :key="role.appRole" :label="role.appRole">{{ role.name }}</el-radio>
+          <el-radio
+            v-for="role in appRoleList"
+            :key="role.appRole"
+            :label="role.appRole"
+            >{{ role.name }}</el-radio
+          >
         </el-radio-group>
       </el-form-item>
       <el-form-item label="角色" size="mini" prop="roleIdList">
@@ -167,7 +190,10 @@ export default {
     return {
       visible: false,
       roleList: [],
-      appRoleList: [{appRole: 1, name: '销售经理'}, {appRole: 2, name: '置业顾问'}],
+      appRoleList: [
+        { appRole: 1, name: "销售经理" },
+        { appRole: 2, name: "置业顾问" },
+      ],
       dataForm: {
         id: 0,
         userName: "",
@@ -178,6 +204,7 @@ export default {
         email: "",
         mobile: "",
         appRole: 0,
+        projectIds: [],
         roleIdList: [],
         status: 1,
         head: "",
@@ -203,6 +230,7 @@ export default {
           { validator: validateMobile, trigger: "blur" },
         ],
       },
+      projects: [],
       headers: { token: Vue.cookie.get("token"), withCredentials: true },
       data: { dirId: "user" },
       files: [],
@@ -245,7 +273,7 @@ export default {
                 this.dataForm.roleIdList = data.user.roleIdList;
                 this.dataForm.status = data.user.status;
                 this.dataForm.head = data.user.head;
-                this.dataForm.appRole = data.user.appRole
+                this.dataForm.appRole = data.user.appRole;
                 if (this.dataForm.head) {
                   this.files = [
                     {
@@ -254,12 +282,14 @@ export default {
                     },
                   ];
                 }
+                this.dataForm.projectIds = data.user.projectIds;
               }
             });
           } else {
             this.files = [];
           }
         });
+      this.queryProjects();
     },
     // 表单提交
     dataFormSubmit() {
@@ -281,7 +311,8 @@ export default {
               status: this.dataForm.status,
               roleIdList: this.dataForm.roleIdList,
               head: this.dataForm.head,
-              appRole: this.dataForm.appRole
+              appRole: this.dataForm.appRole,
+              projectIds: this.dataForm.projectIds,
             }),
           }).then(({ data }) => {
             if (data && data.code === 0) {
@@ -300,6 +331,28 @@ export default {
           });
         }
       });
+    },
+    queryProjects() {
+      this.$http.get("/busi/busiproject/list", {
+        page: 0,
+        limit: 1000,
+        success: (data) => {
+          this.projects = data.page.list;
+        },
+      });
+    },
+    listProject(queryString, cb) {
+      let results = this.projects.filter((p) => {
+        if (!queryString) {
+          return true;
+        }
+        return p.name.indexOf(queryString) >= 0;
+      });
+      cb(results);
+    },
+    handleSelect(item) {
+      this.dataForm.projectId = item.id;
+      this.dataForm.projectName = item.name;
     },
     // 文件上传相关
     handleRemove(file) {

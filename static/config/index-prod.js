@@ -5,7 +5,7 @@
   window.SITE_CONFIG = {};
 
   // api接口请求地址
-  window.SITE_CONFIG["baseUrl"] = "http://120.92.154.12/crm-server";
+  window.SITE_CONFIG["baseUrl"] = "http://222.210.108.61:8888/crm-server";
 
   // cdn地址 = 域名 + 版本号
   window.SITE_CONFIG["domain"] = "./"; // 域名
