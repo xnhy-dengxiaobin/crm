@@ -93,6 +93,11 @@
           <img width="100%" :src="dialogImageUrl" alt="" />
         </el-dialog>
       </el-form-item>
+      <el-form-item label="关联项目" size="mini">
+          <el-checkbox-group v-model="dataForm.projectIdList">
+            <el-checkbox v-for="project in projects" :key="project.id" :label="project.id">{{ project.name }}</el-checkbox>
+          </el-checkbox-group>
+      </el-form-item>
       <el-form-item label="APP角色" size="mini" prop="appRole">
         <el-radio-group v-model="dataForm.appRole">
           <el-radio v-for="role in appRoleList" :key="role.appRole" :label="role.appRole">{{ role.name }}</el-radio>
@@ -167,6 +172,7 @@ export default {
     return {
       visible: false,
       roleList: [],
+      projects: [],
       appRoleList: [{appRole: 1, name: '销售经理'}, {appRole: 2, name: '置业顾问'}],
       dataForm: {
         id: 0,
@@ -179,6 +185,7 @@ export default {
         mobile: "",
         appRole: 0,
         roleIdList: [],
+        projectIdList: [],
         status: 1,
         head: "",
       },
@@ -211,6 +218,20 @@ export default {
       dialogVisible: false,
       disabled: false,
     };
+  },
+  created() {
+    this.$http({
+        url: this.$http.adornUrl(
+          `/busi/busiproject/listParent`
+        ),
+        method: "post"
+      }).then(({ data }) => {
+        if (data && data.code === 0) {
+          this.projects = data.list;
+        } else {
+          // this.$message.error(data.msg);
+        }
+      });
   },
   methods: {
     init(id) {
@@ -281,7 +302,8 @@ export default {
               status: this.dataForm.status,
               roleIdList: this.dataForm.roleIdList,
               head: this.dataForm.head,
-              appRole: this.dataForm.appRole
+              appRole: this.dataForm.appRole,
+              projectIds: this.dataForm.projectIdList
             }),
           }).then(({ data }) => {
             if (data && data.code === 0) {
