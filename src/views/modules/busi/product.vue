@@ -14,7 +14,7 @@
       <el-table-column
         prop="id"
         header-align="center"
-        min-width="150"
+        width="150"
         label="ID" >
       </el-table-column>
       <el-table-column
@@ -27,7 +27,7 @@
         prop="parentName"
         header-align="center"
         align="center"
-        width="120"
+        min-width="150"
         label="上级项目">
       </el-table-column>
 

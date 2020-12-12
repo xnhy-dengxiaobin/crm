@@ -333,11 +333,11 @@ export default {
       });
     },
     queryProjects() {
-      this.$http.get("/busi/busiproject/list", {
+      this.$http.get("/busi/busiproject/listParent", {
         page: 0,
         limit: 1000,
         success: (data) => {
-          this.projects = data.page.list;
+          this.projects = data.list;
         },
       });
     },
