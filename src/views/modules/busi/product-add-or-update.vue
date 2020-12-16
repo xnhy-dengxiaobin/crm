@@ -11,25 +11,20 @@
       @keyup.enter.native="dataFormSubmit()"
       label-width="80px"
     >
-
-      <el-form-item
-        label="名称"
-        prop="name"
-      >
-        <el-input
-          v-model="dataForm.name"
-          placeholder="名称"
-        ></el-input>
+      <el-form-item label="名称" prop="name">
+        <el-input v-model="dataForm.name" placeholder="名称"></el-input>
       </el-form-item>
-      <el-form-item
-        label="上级项目"
-        prop="parentId"
-      >
-          <el-select v-model="dataForm.parentId" filterable >
-            <el-option :value="parent.id" :label="parent.name" v-for="parent in parents">{{ parent.name }}</el-option>
-          </el-select>
+      <el-form-item label="上级项目" prop="parentId">
+        <el-select v-model="dataForm.parentId" filterable>
+          <el-option
+            :value="parent.id"
+            :label="parent.name"
+            v-for="parent in parents"
+            :key="parent.id"
+            >{{ parent.name }}</el-option
+          >
+        </el-select>
       </el-form-item>
-
     </el-form>
     <span slot="footer" class="dialog-footer">
       <el-button @click="visible = false">取消</el-button>
@@ -63,17 +58,15 @@ export default {
   },
   created() {
     this.$http({
-        url: this.$http.adornUrl(
-          `/busi/busiproject/listParent`
-        ),
-        method: "post"
-      }).then(({ data }) => {
-        if (data && data.code === 0) {
-          this.parents = data.list;
-        } else {
-          // this.$message.error(data.msg);
-        }
-      });
+      url: this.$http.adornUrl(`/busi/busiproject/listParent`),
+      method: "post",
+    }).then(({ data }) => {
+      if (data && data.code === 0) {
+        this.parents = data.list;
+      } else {
+        // this.$message.error(data.msg);
+      }
+    });
   },
   methods: {
     init(id) {
@@ -105,7 +98,7 @@ export default {
             data: this.$http.adornData({
               id: this.dataForm.id || undefined,
               name: this.dataForm.name,
-              parentId: this.dataForm.parentId
+              parentId: this.dataForm.parentId,
             }),
           }).then(({ data }) => {
             if (data && data.code === 0) {

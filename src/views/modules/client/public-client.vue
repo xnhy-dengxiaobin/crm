@@ -13,6 +13,14 @@
         ></el-input>
       </el-form-item>
       <el-form-item>
+        <el-radio-group v-model="dataForm.stt">
+          <el-radio :label="4">所有客户</el-radio>
+          <el-radio :label="3">正常客户</el-radio>
+          <el-radio :label="2">公共客户</el-radio>
+          <el-radio :label="1">逾期客户</el-radio>
+        </el-radio-group>
+      </el-form-item>
+      <el-form-item>
         <el-button @click="getDataList()">查询</el-button>
         <!--<el-button
           v-if="isAuth('sys:user:save')"
@@ -20,7 +28,7 @@
           @click="addOrUpdateHandle()"
           >新增</el-button
         >-->
-       <!-- <el-button
+        <!-- <el-button
           v-if="isAuth('sys:user:delete')"
           type="danger"
           @click="deleteHandle()"
@@ -44,11 +52,12 @@
       >
       </el-table-column>
       <el-table-column
-              prop="projectName"
-              header-align="center"
-              align="center"
-              label="项目名">
-            </el-table-column>
+        prop="projectName"
+        header-align="center"
+        align="center"
+        label="项目名"
+      >
+      </el-table-column>
       <el-table-column
         prop="name"
         header-align="center"
@@ -74,7 +83,8 @@
         prop="purpose"
         header-align="center"
         align="center"
-        label="购房用途">
+        label="购房用途"
+      >
       </el-table-column>
       <el-table-column
         prop="purposeProduct"
@@ -132,7 +142,7 @@
             v-if="isAuth('sys:user:delete')"
             type="text"
             size="small"
-            @click="addOrUpdateHandle(scope.row.id , scope.row.projectId)"
+            @click="addOrUpdateHandle(scope.row.id, scope.row.projectId)"
             >分配</el-button
           >
         </template>
@@ -158,12 +168,13 @@
 </template>
 
 <script>
-import AddOrUpdate from './client-match-user.vue'
+import AddOrUpdate from "./client-match-user.vue";
 export default {
   data() {
     return {
       dataForm: {
         keyword: "",
+        stt: 4,
       },
       dataList: [],
       pageIndex: 1,
@@ -175,7 +186,7 @@ export default {
     };
   },
   components: {
-    AddOrUpdate
+    AddOrUpdate,
   },
   activated() {
     this.getDataList();
@@ -191,6 +202,7 @@ export default {
           page: this.pageIndex,
           limit: this.pageSize,
           keyword: this.dataForm.keyword,
+          stt: this.dataForm.stt,
         }),
       }).then(({ data }) => {
         if (data && data.code === 0) {
@@ -226,103 +238,102 @@ export default {
       });
     },
     // 删除
-        deleteHandle(id) {
-          var userIds = id
-            ? [id]
-            : this.dataListSelections.map((item) => {
-                return item.id;
-              });
-          this.$confirm(
-            `确定对[id=${userIds.join(",")}]进行[${id ? "删除" : "批量删除"}]操作?`,
-            "提示",
-            {
-              confirmButtonText: "确定",
-              cancelButtonText: "取消",
-              type: "warning",
-            }
-          )
-            .then(() => {
-              this.$http({
-                url: this.$http.adornUrl("/sys/user/delete"),
-                method: "post",
-                data: this.$http.adornData(userIds, false),
-              }).then(({ data }) => {
-                if (data && data.code === 0) {
-                  this.$message({
-                    message: "操作成功",
-                    type: "success",
-                    duration: 1500,
-                    onClose: () => {
-                      this.getDataList();
-                    },
-                  });
-                } else {
-                  this.$message.error(data.msg);
-                }
-              });
-            })
-            .catch(() => {});
-        },
-        // 回收
-        recoveryHandle(id) {
-          var userIds = id
-            ? [id]
-            : this.dataListSelections.map((item) => {
-                return item.id;
-              });
-          this.$confirm(
-            `确定对[id=${userIds.join(",")}]进行[${id ? "回收" : "批量回收"}]操作?`,
-            "提示",
-            {
-              confirmButtonText: "确定",
-              cancelButtonText: "取消",
-              type: "warning",
-            }
-          )
-            .then(() => {
-              this.$http({
-                url: this.$http.adornUrl("/busi/manager/busicustomer/recovery"),
-                method: "post",
-                data: this.$http.adornData(userIds, false),
-              }).then(({ data }) => {
-                if (data && data.code === 0) {
-                  this.$message({
-                    message: "操作成功",
-                    type: "success",
-                    duration: 1500,
-                    onClose: () => {
-                      this.getDataList();
-                    },
-                  });
-                } else {
-                  this.$message.error(data.msg);
-                }
-              });
-            })
-            .catch(() => {});
-        },
-        // 分配
-        shareHandle(id) {
+    deleteHandle(id) {
+      var userIds = id
+        ? [id]
+        : this.dataListSelections.map((item) => {
+            return item.id;
+          });
+      this.$confirm(
+        `确定对[id=${userIds.join(",")}]进行[${id ? "删除" : "批量删除"}]操作?`,
+        "提示",
+        {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning",
+        }
+      )
+        .then(() => {
           this.$http({
-              url: this.$http.adornUrl("/sys/user/delete"),
-              method: "post",
-              data: this.$http.adornData(id, false),
-            }).then(({ data }) => {
-              if (data && data.code === 0) {
-                this.$message({
-                  message: "操作成功",
-                  type: "success",
-                  duration: 1500,
-                  onClose: () => {
-                    this.getDataList();
-                  },
-                });
-              } else {
-                this.$message.error(data.msg);
-              }
-            });
-        },
-
+            url: this.$http.adornUrl("/sys/user/delete"),
+            method: "post",
+            data: this.$http.adornData(userIds, false),
+          }).then(({ data }) => {
+            if (data && data.code === 0) {
+              this.$message({
+                message: "操作成功",
+                type: "success",
+                duration: 1500,
+                onClose: () => {
+                  this.getDataList();
+                },
+              });
+            } else {
+              this.$message.error(data.msg);
+            }
+          });
+        })
+        .catch(() => {});
+    },
+    // 回收
+    recoveryHandle(id) {
+      var userIds = id
+        ? [id]
+        : this.dataListSelections.map((item) => {
+            return item.id;
+          });
+      this.$confirm(
+        `确定对[id=${userIds.join(",")}]进行[${id ? "回收" : "批量回收"}]操作?`,
+        "提示",
+        {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning",
+        }
+      )
+        .then(() => {
+          this.$http({
+            url: this.$http.adornUrl("/busi/manager/busicustomer/recovery"),
+            method: "post",
+            data: this.$http.adornData(userIds, false),
+          }).then(({ data }) => {
+            if (data && data.code === 0) {
+              this.$message({
+                message: "操作成功",
+                type: "success",
+                duration: 1500,
+                onClose: () => {
+                  this.getDataList();
+                },
+              });
+            } else {
+              this.$message.error(data.msg);
+            }
+          });
+        })
+        .catch(() => {});
+    },
+    // 分配
+    shareHandle(id) {
+      this.$http({
+        url: this.$http.adornUrl("/sys/user/delete"),
+        method: "post",
+        data: this.$http.adornData(id, false),
+      }).then(({ data }) => {
+        if (data && data.code === 0) {
+          this.$message({
+            message: "操作成功",
+            type: "success",
+            duration: 1500,
+            onClose: () => {
+              this.getDataList();
+            },
+          });
+        } else {
+          this.$message.error(data.msg);
+        }
+      });
+    },
   },
 };
 </script>
