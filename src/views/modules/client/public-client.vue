@@ -21,7 +21,22 @@
         </el-radio-group>
       </el-form-item>
       <el-form-item>
-        <el-button @click="getDataList()">查询</el-button>
+        <el-select v-model="dataForm.oldMatchUserId" clearable placeholder="请选择">
+          <el-option
+            v-for="item in sales"
+            :key="item.userId"
+            :label="item.name"
+            :value="item.userId">
+          </el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item>
+        <el-button @click="search()">查询</el-button>
+        <el-button
+         type="primary"
+         @click="batchAllocation()"
+         >批量分配</el-button
+        >
         <!--<el-button
           v-if="isAuth('sys:user:save')"
           type="primary"
@@ -142,6 +157,13 @@
             v-if="isAuth('sys:user:delete')"
             type="text"
             size="small"
+            @click="queryRoamList(scope.row.id)"
+          >查看转介</el-button
+          >
+          <el-button
+            v-if="isAuth('sys:user:delete')"
+            type="text"
+            size="small"
             @click="addOrUpdateHandle(scope.row.id, scope.row.projectId)"
             >分配</el-button
           >
@@ -164,6 +186,25 @@
       ref="addOrUpdate"
       @refreshDataList="getDataList"
     ></add-or-update>
+    <el-dialog
+      title="转介信息"
+      :visible.sync="dialogVisible"
+      width="30%">
+      <div class="block">
+        <el-timeline >
+          <el-timeline-item
+            v-for="(roam, index) in roamList"
+            :key="index"
+            :timestamp="roam.createTime">
+            {{roam.remark}}
+          </el-timeline-item>
+        </el-timeline>
+      </div>
+      <span slot="footer" class="dialog-footer">
+    <el-button @click="dialogVisible = false">取 消</el-button>
+    <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
+  </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -175,6 +216,7 @@ export default {
       dataForm: {
         keyword: "",
         stt: 4,
+        oldMatchUserId: null
       },
       dataList: [],
       pageIndex: 1,
@@ -183,6 +225,10 @@ export default {
       dataListLoading: false,
       dataListSelections: [],
       addOrUpdateVisible: false,
+      sales: [],
+      roamList: [],
+      reverse: true,
+      dialogVisible: false
     };
   },
   components: {
@@ -190,11 +236,69 @@ export default {
   },
   activated() {
     this.getDataList();
+    this.getSalesAll();
   },
   methods: {
+    queryRoamList(id) {
+      this.$http({
+        url: this.$http.adornUrl("/busi/busicustomerroam/listByCustomerId?customerId=" + id),
+        method: "get",
+        params: {},
+      }).then(({ data }) => {
+        if (data && data.code === 0) {
+          this.roamList = data.list;
+          this.dialogVisible = true;
+        }
+      });
+    },
+    search() {
+      this.pageIndex = 1;
+      this.getDataList();
+    },
+    getSalesAll() {
+      this.$http({
+        url: this.$http.adornUrl("/sys/user/salesAll"),
+        method: "get",
+        params: {},
+      }).then(({ data }) => {
+        if (data && data.code === 0) {
+          this.sales = data.list;
+        }
+      });
+    },
+    batchAllocation() {
+      console.log(this.dataListSelections)
+      var ids = '';
+      var isNext = true;
+      if (this.dataListSelections.length > 0) {
+        for (var index in this.dataListSelections) {
+          for (var index2 in this.dataListSelections) {
+            if (this.dataListSelections[index].projectId !== this.dataListSelections[index2].projectId) {
+              console.log(this.dataListSelections[index].projectId + '====' + this.dataListSelections[index2].projectId)
+              isNext = false;
+              break
+            }
+          }
+          if (index === '0') {
+            ids = this.dataListSelections[index].id;
+          } else {
+            ids = ids + ',' + this.dataListSelections[index].id;
+          }
+        }
+        if (!isNext) {
+          this.$message.error('不同项目客户无法批量分配');
+          return
+        }
+        console.log(ids)
+        this.addOrUpdateHandle(ids, this.dataListSelections[0].projectId)
+      } else {
+        this.$message.error('请选择');
+      }
+    },
     // 获取数据列表
     getDataList() {
       this.dataListLoading = true;
+      console.log(this.dataForm.oldMatchUserId)
       this.$http({
         url: this.$http.adornUrl("/busi/manager/busicustomer/publicList"),
         method: "get",
@@ -203,6 +307,7 @@ export default {
           limit: this.pageSize,
           keyword: this.dataForm.keyword,
           stt: this.dataForm.stt,
+          oldMatchUserId: this.dataForm.oldMatchUserId
         }),
       }).then(({ data }) => {
         if (data && data.code === 0) {

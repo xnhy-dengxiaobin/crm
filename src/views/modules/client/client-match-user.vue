@@ -143,9 +143,19 @@ export default {
       alert("请选择分配的置业顾问");
       return
     }
+      var idList = this.dataForm.id.split(',')
+      var userIdList = []
+      if (idList.length > 1) {
+        for (var index in idList) {
+          console.log(index)
+          userIdList.push(this.dataForm.roleIdList)
+        }
+      } else {
+        userIdList.push(this.dataForm.roleIdList)
+      }
       this.$http({
         url: this.$http.adornUrl(
-          "/busi/manager/busicustomer/share?userIds=" + this.dataForm.roleIdList + "&customerIds=" + this.dataForm.id
+          "/busi/manager/busicustomer/share?userIds=" + userIdList + "&customerIds=" + this.dataForm.id
         ),
         method: "get",
       }).then(({ data }) => {
