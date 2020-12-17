@@ -21,7 +21,7 @@
         </el-radio-group>
       </el-form-item>
       <el-form-item>
-        <el-select v-model="dataForm.oldMatchUserId" clearable placeholder="之前置业顾问">
+        <el-select v-model="dataForm.matchUserId" clearable placeholder="置业顾问">
           <el-option
             v-for="item in sales"
             :key="item.userId"
@@ -116,11 +116,11 @@
       >
       </el-table-column>
       <el-table-column
-        prop="oldMatchName"
+        prop="matchName"
         header-align="center"
         align="center"
         width="180"
-        label="之前的置业顾问"
+        label="当前置业顾问"
       >
       </el-table-column>
 
@@ -307,7 +307,7 @@ export default {
           limit: this.pageSize,
           keyword: this.dataForm.keyword,
           stt: this.dataForm.stt,
-          oldMatchUserId: this.dataForm.oldMatchUserId
+          matchUserId: this.dataForm.matchUserId
         }),
       }).then(({ data }) => {
         if (data && data.code === 0) {
