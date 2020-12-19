@@ -37,6 +37,11 @@
          @click="batchAllocation()"
          >批量分配</el-button
         >
+        <el-button
+          type="danger"
+          @click="batchRecycle()"
+        >批量回收</el-button
+        >
         <!--<el-button
           v-if="isAuth('sys:user:save')"
           type="primary"
@@ -265,6 +270,43 @@ export default {
           this.sales = data.list;
         }
       });
+    },
+    batchRecycle() {
+      console.log(this.dataListSelections)
+      var userIds = []
+      for (var index in this.dataListSelections) {
+        userIds.push(this.dataListSelections[index].id);
+      }
+      this.$confirm(
+        `确定回收操作?`,
+        "提示",
+        {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning",
+        }
+      )
+        .then(() => {
+            this.$http({
+            url: this.$http.adornUrl("/busi/manager/busicustomer/recovery"),
+            method: "post",
+            data: this.$http.adornData(userIds, false),
+          }).then(({ data }) => {
+            if (data && data.code === 0) {
+              this.$message({
+                message: "操作成功",
+                type: "success",
+                duration: 1500,
+                onClose: () => {
+                  this.getDataList();
+                },
+              });
+            } else {
+              this.$message.error(data.msg);
+            }
+          });
+        })
+        .catch(() => {});
     },
     batchAllocation() {
       console.log(this.dataListSelections)
