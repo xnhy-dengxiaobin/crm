@@ -12,14 +12,10 @@
       label-width="80px"
     >
       <el-form-item label="置业顾问" size="mini" prop="roleIdList">
-        <el-radio-group v-model="dataForm.roleIdList">
-          <el-radio
-            v-for="role in roleList"
-            :key="role.userId"
-            :label="role.userId"
-            >{{ role.name }}</el-radio
-          >
-        </el-radio-group>
+        <div style="margin: 15px 0;"></div>
+        <el-checkbox-group v-model="checkedRole" @change="handleCheckedCitiesChange">
+          <el-checkbox v-for="role in roleList" :label="role.userId" :key="role.userId">{{role.name}}</el-checkbox>
+        </el-checkbox-group>
       </el-form-item>
     </el-form>
     <span slot="footer" class="dialog-footer">
@@ -74,6 +70,7 @@ export default {
     return {
       visible: false,
       roleList: [],
+      checkedRole: [],
       appRoleList: [{appRole: 1, name: '销售经理'}, {appRole: 2, name: '置业顾问'}],
       dataForm: {
         id: 0,
@@ -139,13 +136,23 @@ export default {
     },
     // 表单提交
     dataFormSubmit() {
-    if (this.dataForm.roleIdList.length < 1) {
+    if (this.checkedRole.length < 1) {
       alert("请选择分配的置业顾问");
       return
     }
+      // var idList = this.dataForm.id.split(',')
+      // var userIdList = []
+      // if (idList.length > 1) {
+      //   for (var index in idList) {
+      //     console.log(index)
+      //     userIdList.push(this.dataForm.roleIdList)
+      //   }
+      // } else {
+      //   userIdList.push(this.dataForm.roleIdList)
+      // }
       this.$http({
         url: this.$http.adornUrl(
-          "/busi/manager/busicustomer/share?userIds=" + this.dataForm.roleIdList + "&customerIds=" + this.dataForm.id
+          "/busi/manager/busicustomer/share?userIds=" + this.checkedRole + "&customerIds=" + this.dataForm.id
         ),
         method: "get",
       }).then(({ data }) => {
