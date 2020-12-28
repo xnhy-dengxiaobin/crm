@@ -79,20 +79,6 @@
       >
       </el-table-column>
       <el-table-column
-        prop="parentId"
-        header-align="center"
-        align="center"
-        label="上级"
-      >
-      </el-table-column>
-      <el-table-column
-        prop="tree"
-        header-align="center"
-        align="center"
-        label="树形路径"
-      >
-      </el-table-column>
-      <el-table-column
         fixed="right"
         header-align="center"
         align="center"

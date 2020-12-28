@@ -23,12 +23,6 @@
       <el-form-item label="状态" prop="status">
         <el-input v-model="dataForm.status" placeholder="0：弃用"></el-input>
       </el-form-item>
-      <el-form-item label="上级" prop="parentId">
-        <el-input v-model="dataForm.parentId" placeholder="上级"></el-input>
-      </el-form-item>
-      <el-form-item label="树形路径" prop="tree">
-        <el-input v-model="dataForm.tree" placeholder="树形路径"></el-input>
-      </el-form-item>
     </el-form>
     <span slot="footer" class="dialog-footer">
       <el-button @click="visible = false">取消</el-button>
@@ -47,27 +41,13 @@ export default {
         keyN: "",
         value: "",
         sort: "",
-        status: "",
-        parentId: "",
-        tree: "",
+        status: 1,
       },
       dataRule: {
         keyN: [{ required: true, message: "key不能为空", trigger: "blur" }],
         value: [{ required: true, message: "value不能为空", trigger: "blur" }],
         sort: [{ required: true, message: "排序不能为空", trigger: "blur" }],
-        status: [
-          { required: true, message: "0：弃用不能为空", trigger: "blur" },
-        ],
-        parentId: [
-          { required: true, message: "上级不能为空", trigger: "blur" },
-        ],
-        tree: [
-          {
-            required: true,
-            message: "从顶级到目前级别的id-路径不能为空",
-            trigger: "blur",
-          },
-        ],
+        status: [{ required: true, message: "状态不能为空", trigger: "blur" }],
       },
     };
   },
@@ -88,8 +68,6 @@ export default {
               this.dataForm.value = data.setup.value;
               this.dataForm.sort = data.setup.sort;
               this.dataForm.status = data.setup.status;
-              this.dataForm.parentId = data.setup.parentId;
-              this.dataForm.tree = data.setup.tree;
             }
           });
         }
@@ -110,8 +88,6 @@ export default {
               value: this.dataForm.value,
               sort: this.dataForm.sort,
               status: this.dataForm.status,
-              parentId: this.dataForm.parentId,
-              tree: this.dataForm.tree,
             }),
           }).then(({ data }) => {
             if (data && data.code === 0) {
