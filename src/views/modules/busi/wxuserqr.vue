@@ -2,14 +2,12 @@
   <div class="mod-config">
     <el-form :inline="true" :model="dataForm" @keyup.enter.native="getDataList()">
       <el-form-item>
-        <el-input v-model="dataForm.name" placeholder="参数名" clearable></el-input>
+        <el-input v-model="dataForm.key" placeholder="参数名" clearable></el-input>
       </el-form-item>
       <el-form-item>
         <el-button @click="getDataList()">查询</el-button>
-        <el-button v-if="isAuth('busi:prepare:save')" type="primary" @click="addOrUpdateHandle()">新增</el-button>
-        <el-button v-if="isAuth('busi:prepare:delete')" type="danger" @click="deleteHandle()" :disabled="dataListSelections.length <= 0">批量删除</el-button>
-        <el-button v-if="isAuth('busi:prepare:check')" type="danger" size="small" @click="check('',10)" :disabled="dataListSelections.length <= 0">批量有效</el-button>
-        <el-button v-if="isAuth('busi:prepare:check')" type="danger" size="small" @click="check('',-20)" :disabled="dataListSelections.length <= 0">批量无效</el-button>
+        <el-button v-if="isAuth('busi:wxuserqr:save')" type="primary" @click="addOrUpdateHandle()">新增</el-button>
+        <el-button v-if="isAuth('busi:wxuserqr:delete')" type="danger" @click="deleteHandle()" :disabled="dataListSelections.length <= 0">批量删除</el-button>
       </el-form-item>
     </el-form>
     <el-table
@@ -25,71 +23,46 @@
         width="50">
       </el-table-column>
       <el-table-column
-        prop="id"
+        prop="unionId"
         header-align="center"
         align="center"
-        label="ID">
+        label="wx微信唯一">
       </el-table-column>
       <el-table-column
-        prop="name"
+        prop="nickName"
         header-align="center"
         align="center"
-        label="客户名称">
+        label="昵称">
       </el-table-column>
       <el-table-column
-        prop="sex"
+        prop="fileid"
         header-align="center"
         align="center"
-        label="性别">
+        label="fileid">
       </el-table-column>
       <el-table-column
-        prop="mobile"
+        prop="contenttype"
         header-align="center"
         align="center"
-        label="手机">
+        label="类型">
       </el-table-column>
       <el-table-column
-        prop="mobile1"
+        prop="filename"
         header-align="center"
         align="center"
-        label="手机1">
+        label="文件名称">
       </el-table-column>
       <el-table-column
-        prop="mobile2"
+        prop="dirId"
         header-align="center"
         align="center"
-        label="手机2">
+        label="路径">
       </el-table-column>
       <el-table-column
-        prop="mobile3"
+        prop="url"
         header-align="center"
         align="center"
-        label="手机3">
-      </el-table-column>
-      <el-table-column
-        prop="projectId"
-        header-align="center"
-        align="center"
-        label="意向楼ID">
-      </el-table-column>
-      <el-table-column
-        prop="userId"
-        header-align="center"
-        align="center"
-        label="中介销售ID">
-      </el-table-column>
-      <el-table-column
-        prop="status"
-        header-align="center"
-        align="center"
-        label="状态">
-        <template slot-scope="scope">
-          <el-tag v-if="scope.row.status === 0" size="small">待确认</el-tag>
-          <el-tag v-else-if="scope.row.status === -10" size="small" type="danger">拒收无效</el-tag>
-          <el-tag v-else-if="scope.row.status === -20" size="small" type="danger">手工无效</el-tag>
-          <el-tag v-else-if="scope.row.status === -30" size="small" type="danger">过期无效</el-tag>
-          <el-tag v-else-if="scope.row.status === 10" size="small" type="danger">有效</el-tag>
-        </template>
+        label="url">
       </el-table-column>
       <el-table-column
         fixed="right"
@@ -98,10 +71,8 @@
         width="150"
         label="操作">
         <template slot-scope="scope">
-          <el-button v-if="isAuth('busi:prepare:check')" type="text" size="small" @click="check(scope.row.id,10)">有效</el-button>
-          <el-button v-if="isAuth('busi:prepare:check')" type="text" size="small" @click="check(scope.row.id,-20)">无效</el-button>
-          <el-button v-if="isAuth('busi:prepare:update')" type="text" size="small" @click="addOrUpdateHandle(scope.row.id)">修改</el-button>
-          <el-button v-if="isAuth('busi:prepare:delete')" type="text" size="small" @click="deleteHandle(scope.row.id)">删除</el-button>
+          <el-button type="text" size="small" @click="addOrUpdateHandle(scope.row.unionId)">修改</el-button>
+          <el-button type="text" size="small" @click="deleteHandle(scope.row.unionId)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -120,12 +91,12 @@
 </template>
 
 <script>
-  import AddOrUpdate from './prepare-add-or-update'
+  import AddOrUpdate from './wxuserqr-add-or-update'
   export default {
     data () {
       return {
         dataForm: {
-          name: ''
+          key: ''
         },
         dataList: [],
         pageIndex: 1,
@@ -147,12 +118,12 @@
       getDataList () {
         this.dataListLoading = true
         this.$http({
-          url: this.$http.adornUrl('/busi/prepare/list'),
+          url: this.$http.adornUrl('/busi/wxuserqr/list'),
           method: 'get',
           params: this.$http.adornParams({
             'page': this.pageIndex,
             'limit': this.pageSize,
-            'name': this.dataForm.name
+            'key': this.dataForm.key
           })
         }).then(({data}) => {
           if (data && data.code === 0) {
@@ -180,38 +151,6 @@
       selectionChangeHandle (val) {
         this.dataListSelections = val
       },
-      check (id, status) {
-        var ids = id ? [id] : this.dataListSelections.map(item => {
-          return item.id
-        })
-        this.$confirm(`确定对[id=${ids.join(',')}]进行[${id ? '立即执行' : '批量立即执行'}]操作?`, '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          this.$http({
-            url: this.$http.adornUrl('/busi/prepare/check'),
-            method: 'post',
-            data: this.$http.adornData({
-                'ids': ids,
-                'status': status
-              })
-          }).then(({data}) => {
-            if (data && data.code === 0) {
-              this.$message({
-                message: '操作成功',
-                type: 'success',
-                duration: 1500,
-                onClose: () => {
-                  this.getDataList()
-                }
-              })
-            } else {
-              this.$message.error(data.msg)
-            }
-          })
-        }).catch(() => {})
-      },
       // 新增 / 修改
       addOrUpdateHandle (id) {
         this.addOrUpdateVisible = true
@@ -222,7 +161,7 @@
       // 删除
       deleteHandle (id) {
         var ids = id ? [id] : this.dataListSelections.map(item => {
-          return item.id
+          return item.unionId
         })
         this.$confirm(`确定对[id=${ids.join(',')}]进行[${id ? '删除' : '批量删除'}]操作?`, '提示', {
           confirmButtonText: '确定',
@@ -230,7 +169,7 @@
           type: 'warning'
         }).then(() => {
           this.$http({
-            url: this.$http.adornUrl('/busi/prepare/delete'),
+            url: this.$http.adornUrl('/busi/wxuserqr/delete'),
             method: 'post',
             data: this.$http.adornData(ids, false)
           }).then(({data}) => {
