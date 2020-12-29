@@ -3,14 +3,17 @@
     <el-row :gutter="20">
       <el-col :span="12">
         <el-card>
-          <el-select v-model="selectProject2" placeholder="请选择" @change="changeProject2">
-            <el-option
-              v-for="item in projects"
-              :key="item.id"
-              :label="item.name"
-              :value="item.id">
-            </el-option>
-          </el-select>
+          <el-checkbox-group v-model="selectProject2" @change="changeProject2">
+            <el-checkbox :label="item.id" v-for="(item, index) in projects" :key="index">{{item.name}}</el-checkbox>
+          </el-checkbox-group>
+          <!--<el-select v-model="selectProject2" placeholder="请选择" @change="changeProject2">-->
+            <!--<el-option-->
+              <!--v-for="item in projects"-->
+              <!--:key="item.id"-->
+              <!--:label="item.name"-->
+              <!--:value="item.id">-->
+            <!--</el-option>-->
+          <!--</el-select>-->
           <div id="J_chartBarBox" class="chart-box"></div>
           <el-radio-group v-model="unit2" @change="changeUnit2">
             <el-radio-button label="day">日</el-radio-button>
@@ -22,14 +25,9 @@
       </el-col>
       <el-col :span="12">
         <el-card>
-          <el-select v-model="selectProject" placeholder="请选择" @change="changeProject">
-            <el-option
-              v-for="item in projects"
-              :key="item.id"
-              :label="item.name"
-              :value="item.id">
-            </el-option>
-          </el-select>
+          <el-checkbox-group v-model="selectProject" @change="changeProject2">
+            <el-checkbox :label="item.id" v-for="(item, index) in projects" :key="index">{{item.name}}</el-checkbox>
+          </el-checkbox-group>
           <div id="J_chartPieBox" class="chart-box"></div>
           <el-radio-group v-model="unit" @change="changeUnit">
             <el-radio-button label="day">日</el-radio-button>
@@ -48,8 +46,8 @@
   export default {
     data () {
       return {
-        selectProject: null,
-        selectProject2: null,
+        selectProject: [],
+        selectProject2: [],
         projects: [],
         chartLine: null,
         chartBar: null,
@@ -126,8 +124,11 @@
           if (data && data.code === 0) {
             this.projects = data.projects
             // this.projects.splice(0, 0, {id: 0, name: '全部项目'});
-            this.selectProject = this.projects[0].id
-            this.selectProject2 = this.projects[0].id
+            // this.selectProject = this.projects[0].id
+            for (var index in this.projects) {
+              this.selectProject.push(this.projects[index].id)
+              this.selectProject2.push(this.projects[index].id)
+            }
             fun()
           } else {
             this.projects = []
