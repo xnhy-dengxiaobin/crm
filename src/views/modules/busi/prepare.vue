@@ -101,7 +101,7 @@
       </el-table-column>
       <el-table-column label="接收时间" header-align="center" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.created_time | date }}</span>
+          <span>{{ scope.row.createdTime | date }}</span>
         </template>
       </el-table-column>
       <el-table-column
@@ -109,6 +109,13 @@
         header-align="center"
         align="center"
         label="经纪人"
+      >
+      </el-table-column>
+      <el-table-column
+        prop="matchUserName"
+        header-align="center"
+        align="center"
+        label="顾问"
       >
       </el-table-column>
       <el-table-column
@@ -247,7 +254,7 @@
             v-if="isAuth('busi:prepare:update')"
             type="text"
             size="small"
-            @click="addOrUpdateHandle(scope.row.id)"
+            @click="addOrUpdateHandle(scope.row.id,10)"
             >有效并分配</el-button
           >
           <el-button
@@ -295,6 +302,7 @@ export default {
       dataListLoading: false,
       dataListSelections: [],
       addOrUpdateVisible: false,
+      subtype: 0
     };
   },
   components: {
@@ -384,10 +392,10 @@ export default {
         .catch(() => {});
     },
     // 新增 / 修改
-    addOrUpdateHandle(id) {
+    addOrUpdateHandle(id, subtype) {
       this.addOrUpdateVisible = true;
       this.$nextTick(() => {
-        this.$refs.addOrUpdate.init(id);
+        this.$refs.addOrUpdate.init(id, subtype);
       });
     },
     batchOp(command) {
