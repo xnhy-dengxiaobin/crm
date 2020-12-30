@@ -68,9 +68,9 @@
         <el-select
           style="width: 100%"
           v-model="dataForm.matchUserId"
+          @change="handleMatchNameSelect"
           filterable
-          placeholder="请选择顾问"
-          @change="handleSaleSelect"
+          placeholder="请选择顾问姓名"
         >
           <el-option
             v-for="user in users"
@@ -108,7 +108,6 @@ export default {
         userName: "",
         status: "",
         projectId: null,
-        matchUserId: null,
         matchUserName: "",
       },
       dataRule: {
@@ -171,7 +170,7 @@ export default {
         }
       });
       this.queryProjects();
-      this.querySales();
+      this.queryMatchType();
     },
     // 表单提交
     dataFormSubmit() {
@@ -224,7 +223,16 @@ export default {
         },
       });
     },
-    querySales() {
+    listProject(queryString, cb) {
+      let results = this.projects.filter((p) => {
+        if (!queryString) {
+          return true;
+        }
+        return p.name.indexOf(queryString) >= 0;
+      });
+      cb(results);
+    },
+    queryMatchType() {
       this.$http.get("/sys/user/list", {
         page: 0,
         limit: 1000,
@@ -233,10 +241,20 @@ export default {
         },
       });
     },
-    async handleSaleSelect(item) {
+    listMatchType(queryString, cb) {
+      let results = this.users.filter((p) => {
+        if (!queryString) {
+          return true;
+        }
+        return p.name.indexOf(queryString) >= 0;
+      });
+      cb(results);
+    },
+    async handleMatchNameSelect(item) {
       let o = await this.users.find((it) => {
         return it.userId === item;
       });
+      console.log("OOOO" + o);
       this.dataForm.matchUserName = o ? o.name : "";
     },
   },
