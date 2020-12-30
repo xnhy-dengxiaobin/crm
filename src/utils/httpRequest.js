@@ -19,6 +19,17 @@ const http = axios.create({
 http.interceptors.request.use(
   config => {
     config.headers["token"] = Vue.cookie.get("token"); // 请求头带上token
+
+    console.log("发送请求=========");
+    console.log("token:" + config.headers.token);
+    console.log(`请求url:${config.baseURL}${config.url}`);
+    console.log(`请求头:${JSON.stringify(config.headers)}`);
+    console.log(
+      `请求参数:${JSON.stringify(
+        config.method === "get" ? config.params : config.data
+      )}`
+    );
+
     return config;
   },
   error => {
@@ -31,6 +42,9 @@ http.interceptors.request.use(
  */
 http.interceptors.response.use(
   response => {
+    console.log("=========响应");
+    console.log(`返回数据:${JSON.stringify(response)}`);
+
     if (response.data && response.data.code === 401) {
       // 401, token失效
       clearLoginInfo();

@@ -6,14 +6,47 @@
       @keyup.enter.native="getDataList()"
     >
       <el-form-item>
+        <el-select
+          style="width: 100%"
+          v-model="dataForm.projectId"
+          filterable
+          placeholder="项目"
+        >
+          <el-option
+            v-for="project in projects"
+            :key="project.id"
+            :label="project.name"
+            :value="project.id"
+          >
+          </el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item>
         <el-input
           v-model="dataForm.mobile"
-          placeholder="手机号"
+          placeholder="客户手机号"
           clearable
         ></el-input>
       </el-form-item>
       <el-form-item>
-        <el-select v-model="dataForm.status" clearable placeholder="状态">
+        <el-date-picker
+          v-model="dataForm.createdTimes"
+          type="datetimerange"
+          :picker-options="pickerOptions"
+          range-separator="至"
+          start-placeholder="首次报备时间起"
+          end-placeholder="首次报备时间止"
+          align="right"
+        >
+        </el-date-picker>
+      </el-form-item>
+      <el-form-item>
+        <el-select
+          v-model="dataForm.status"
+          clearable
+          multiple
+          placeholder="报备状态"
+        >
           <el-option label="待确认" value="0"> </el-option>
           <el-option label="待分配" value="10"> </el-option>
           <el-option label="已分配" value="20"> </el-option>
@@ -35,28 +68,29 @@
         </el-select>
       </el-form-item>
       <el-form-item>
+        <el-select
+          style="width: 100%"
+          v-model="dataForm.middleTypeId"
+          filterable
+          placeholder="渠道身份"
+        >
+          <el-option
+            v-for="middleType in middleTypes"
+            :key="middleType.id"
+            :label="middleType.name"
+            :value="middleType.id"
+          >
+          </el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item>
         <el-button @click="getDataList()">查询</el-button>
-        <!-- <el-button
-          v-if="isAuth('busi:prepare:save')"
+        <el-button
+          v-if="isAuth('busi:prepare:update')"
           type="primary"
-          @click="addOrUpdateHandle()"
-          >新增</el-button
-        > -->
-        <el-dropdown @command="batchOp">
-          <el-button type="warning">
-            批量操作<i class="el-icon-arrow-down el-icon--right"></i>
-          </el-button>
-          <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item v-if="isAuth('busi:prepare:check')" command="pass"
-              >有效</el-dropdown-item
-            >
-            <el-dropdown-item
-              v-if="isAuth('busi:prepare:check')"
-              command="reject"
-              >无效</el-dropdown-item
-            >
-          </el-dropdown-menu>
-        </el-dropdown>
+          @click="refresh()"
+          >刷新保护期</el-button
+        >
       </el-form-item>
     </el-form>
     <el-table
@@ -72,6 +106,16 @@
         align="center"
         width="50"
       >
+      </el-table-column>
+      <el-table-column
+        prop="name"
+        header-align="center"
+        align="center"
+        label="首次报备时间"
+      >
+        <template slot-scope="scope">
+          <span>{{ scope.row.createdTime | date }}</span>
+        </template>
       </el-table-column>
       <el-table-column
         prop="name"
@@ -94,17 +138,39 @@
         label="手机"
       >
       </el-table-column>
-      <el-table-column label="接收时间" header-align="center" align="center">
-        <template slot-scope="scope">
-          <span>{{ scope.row.createdTime | date }}</span>
-        </template>
-      </el-table-column>
       <el-table-column
-        prop="userName"
+        prop="userId"
         header-align="center"
         align="center"
         label="经纪人"
       >
+      </el-table-column>
+      <el-table-column
+        prop="middleTypeName"
+        header-align="center"
+        align="center"
+        label="渠道身份"
+      >
+      </el-table-column>
+      <el-table-column
+        prop="status"
+        header-align="center"
+        align="center"
+        label="客户状态"
+      >
+        <template slot-scope="scope">
+          {{ scope.row.status | busiStatus }}
+        </template>
+      </el-table-column>
+      <el-table-column
+        prop="status"
+        header-align="center"
+        align="center"
+        label="报备状态"
+      >
+        <template slot-scope="scope">
+          {{ scope.row.status | prepareStatus }}
+        </template>
       </el-table-column>
       <el-table-column
         prop="matchUserName"
@@ -113,116 +179,18 @@
         label="顾问"
       >
       </el-table-column>
+
       <el-table-column
-        prop="middleTypeName"
+        prop="name"
         header-align="center"
         align="center"
-        label="身份信息"
-      >
-      </el-table-column>
-      <el-table-column
-        v-if="dataForm.status === 0 || dataForm.status === 10"
-        prop=""
-        header-align="center"
-        align="center"
-        label="预约看房时间"
-      >
-      </el-table-column>
-      <el-table-column
-        v-if="dataForm.status === 0 || dataForm.status === 10"
-        prop="projectId"
-        header-align="center"
-        align="center"
-        label="客户意向"
-      >
-      </el-table-column>
-      <el-table-column
-        v-if="dataForm.status === 0 || dataForm.status === 10"
-        prop=""
-        header-align="center"
-        align="center"
-        label="认知途径"
-      >
-      </el-table-column
-      ><el-table-column
-        v-if="dataForm.status === 0 || dataForm.status === 10"
-        prop=""
-        header-align="center"
-        align="center"
-        label="客户描述"
-      >
-      </el-table-column>
-      <el-table-column
-        v-if="dataForm.status === 10"
-        prop=""
-        header-align="center"
-        align="center"
-        label="确认时间"
-      >
-      </el-table-column>
-      <el-table-column
-        v-if="dataForm.status === 10"
-        prop=""
-        header-align="center"
-        align="center"
-        label="确认人"
-      >
-      </el-table-column>
-      <el-table-column
-        v-if="dataForm.status === 20"
-        prop=""
-        header-align="center"
-        align="center"
-        label="业务员"
-      >
-      </el-table-column>
-      <el-table-column
-        v-if="dataForm.status === 20"
-        prop=""
-        header-align="center"
-        align="center"
-        label="分配时间"
-      >
-      </el-table-column>
-      <el-table-column
-        v-if="dataForm.status === 20"
-        prop=""
-        header-align="center"
-        align="center"
-        label="分配人"
-      >
-      </el-table-column>
-      <el-table-column
-        prop="status"
-        header-align="center"
-        align="center"
-        label="状态"
+        label="保护期截至"
       >
         <template slot-scope="scope">
-          <el-tag v-if="scope.row.status === 0" size="small">待确认</el-tag>
-          <el-tag
-            v-else-if="scope.row.status === -10"
-            size="small"
-            type="danger"
-            >拒收无效</el-tag
-          >
-          <el-tag
-            v-else-if="scope.row.status === -20"
-            size="small"
-            type="danger"
-            >手工无效</el-tag
-          >
-          <el-tag
-            v-else-if="scope.row.status === -30"
-            size="small"
-            type="danger"
-            >过期无效</el-tag
-          >
-          <el-tag v-else-if="scope.row.status === 10" size="small" type="danger"
-            >有效</el-tag
-          >
+          <span>{{ scope.row.expired | date("YYYY-MM-DD") }}</span>
         </template>
       </el-table-column>
+
       <el-table-column
         fixed="right"
         header-align="center"
@@ -232,39 +200,18 @@
       >
         <template slot-scope="scope">
           <el-button
-            v-if="isAuth('busi:prepare:check') && scope.row.status != 10"
+            v-if="isAuth('busi:prepare:update')"
             type="text"
             size="small"
-            @click="check(scope.row.id, 10)"
-            >有效</el-button
+            @click="refresh(scope.row.id)"
+            >刷新保护期</el-button
           >
-          <el-button
-            v-if="isAuth('busi:prepare:update') && scope.row.status === 10"
-            type="text"
-            size="small"
-            @click="addOrUpdateHandle(scope.row.id, 10)"
-            >分配</el-button
-          >
-          <el-button
-            v-if="isAuth('busi:prepare:check') && scope.row.status === 10"
+          <!-- <el-button
+            v-if="isAuth('busi:prepare:join') "
             type="text"
             size="small"
             @click="check(scope.row.id, -20)"
-            >无效</el-button
-          >
-          <el-button
-            v-if="isAuth('busi:prepare:update') && scope.row.status != 10"
-            type="text"
-            size="small"
-            @click="addOrUpdateHandle(scope.row.id, 10)"
-            >有效并分配</el-button
-          >
-          <!-- <el-button
-            v-if="isAuth('busi:prepare:delete')"
-            type="text"
-            size="small"
-            @click="deleteHandle(scope.row.id)"
-            >删除</el-button
+            >关联</el-button
           > -->
         </template>
       </el-table-column>
@@ -290,13 +237,22 @@
 
 <script>
 import AddOrUpdate from "./prepare-add-or-update";
+import moment from "moment";
 export default {
   data() {
     return {
       dataForm: {
+        projectId: null,
         name: "",
-        status: 0,
+        createdTimes: [],
+        start: null,
+        end: null,
+        middleTypeId: null,
+        status: null,
+        busiStatus: null,
       },
+      middleTypes: [],
+      projects: [],
       dataList: [],
       pageIndex: 1,
       pageSize: 10,
@@ -305,6 +261,37 @@ export default {
       dataListSelections: [],
       addOrUpdateVisible: false,
       subtype: 0,
+      pickerOptions: {
+        shortcuts: [
+          {
+            text: "最近一周",
+            onClick(picker) {
+              const end = new Date();
+              const start = new Date();
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+              picker.$emit("pick", [start, end]);
+            },
+          },
+          {
+            text: "最近一个月",
+            onClick(picker) {
+              const end = new Date();
+              const start = new Date();
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+              picker.$emit("pick", [start, end]);
+            },
+          },
+          {
+            text: "最近三个月",
+            onClick(picker) {
+              const end = new Date();
+              const start = new Date();
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
+              picker.$emit("pick", [start, end]);
+            },
+          },
+        ],
+      },
     };
   },
   components: {
@@ -312,18 +299,43 @@ export default {
   },
   activated() {
     this.getDataList();
+    this.queryProjects();
+    this.queryMiddleType();
   },
   methods: {
     // 获取数据列表
     getDataList() {
       this.dataListLoading = true;
+      if (this.dataForm.createdTimes && this.dataForm.createdTimes.length > 0) {
+        this.dataForm.start = this.dataForm.createdTimes[0];
+        this.dataForm.start = moment(this.dataForm.start).format("YYYY-MM-DD");
+        if (this.dataForm.createdTimes.length > 1) {
+          this.dataForm.end = this.dataForm.createdTimes[0];
+          this.dataForm.end = moment(this.dataForm.end).format("YYYY-MM-DD");
+        }
+      }
+      this.dataForm.status =
+        this.dataForm.status && this.dataForm.status.length > 0
+          ? this.dataForm.status
+          : null;
+      this.dataForm.busiStatus =
+        this.dataForm.busiStatus && this.dataForm.busiStatus.length > 0
+          ? this.dataForm.busiStatus
+          : null;
+
       this.$http({
-        url: this.$http.adornUrl("/busi/prepare/list"),
-        method: "get",
-        params: this.$http.adornParams({
+        url: this.$http.adornUrl("/busi/prepare/listPage4Admin"),
+        method: "post",
+        data: this.$http.adornData({
           page: this.pageIndex,
           limit: this.pageSize,
           name: this.dataForm.name,
+          projectId: this.dataForm.projectId,
+          start: this.dataForm.start,
+          end: this.dataForm.end,
+          middleTypeId: this.dataForm.middleTypeId,
+          status: this.dataForm.status,
+          busiStatus: this.dataForm.busiStatus,
         }),
       }).then(({ data }) => {
         if (data && data.code === 0) {
@@ -351,7 +363,43 @@ export default {
     selectionChangeHandle(val) {
       this.dataListSelections = val;
     },
-    check(id, status) {
+    queryProjects() {
+      this.$http.get("/busi/busiproject/listParent", {
+        page: 0,
+        limit: 1000,
+        success: (data) => {
+          this.projects = data.list;
+        },
+      });
+    },
+    listProject(queryString, cb) {
+      let results = this.projects.filter((p) => {
+        if (!queryString) {
+          return true;
+        }
+        return p.name.indexOf(queryString) >= 0;
+      });
+      cb(results);
+    },
+    queryMiddleType() {
+      this.$http.get("/busi/middletype/list", {
+        page: 0,
+        limit: 1000,
+        success: (data) => {
+          this.middleTypes = data.page.list;
+        },
+      });
+    },
+    listMiddleType(queryString, cb) {
+      let results = this.middleTypes.filter((p) => {
+        if (!queryString) {
+          return true;
+        }
+        return p.name.indexOf(queryString) >= 0;
+      });
+      cb(results);
+    },
+    refresh(id, status) {
       var ids = id
         ? [id]
         : this.dataListSelections.map((item) => {
@@ -363,7 +411,7 @@ export default {
       this.$confirm(
         `确定对[id=${ids.join(",")}]进行[${
           id ? "立即执行" : "批量立即执行"
-        }]操作?`,
+        }]刷新保护期操作?`,
         "提示",
         {
           confirmButtonText: "确定",
@@ -373,11 +421,10 @@ export default {
       )
         .then(() => {
           this.$http({
-            url: this.$http.adornUrl("/busi/prepare/check"),
+            url: this.$http.adornUrl("/busi/prepare/refresh"),
             method: "post",
             data: this.$http.adornData({
               ids: ids,
-              status: status,
             }),
           }).then(({ data }) => {
             if (data && data.code === 0) {
@@ -395,59 +442,6 @@ export default {
           });
         })
         .catch(() => {});
-    },
-    // 新增 / 修改
-    addOrUpdateHandle(id, subtype) {
-      this.addOrUpdateVisible = true;
-      this.$nextTick(() => {
-        this.$refs.addOrUpdate.init(id, subtype);
-      });
-    },
-    batchOp(command) {
-      switch (command) {
-        case "pass":
-          this.check("", 10);
-          break;
-        default:
-          this.check("", -20);
-          break;
-      }
-    },
-    // 删除
-    deleteHandle(id) {
-      var ids = id
-        ? [id]
-        : this.dataListSelections.map((item) => {
-            return item.id;
-          });
-      this.$confirm(
-        `确定对[id=${ids.join(",")}]进行[${id ? "删除" : "批量删除"}]操作?`,
-        "提示",
-        {
-          confirmButtonText: "确定",
-          cancelButtonText: "取消",
-          type: "warning",
-        }
-      ).then(() => {
-        this.$http({
-          url: this.$http.adornUrl("/busi/prepare/delete"),
-          method: "post",
-          data: this.$http.adornData(ids, false),
-        }).then(({ data }) => {
-          if (data && data.code === 0) {
-            this.$message({
-              message: "操作成功",
-              type: "success",
-              duration: 1500,
-              onClose: () => {
-                this.getDataList();
-              },
-            });
-          } else {
-            this.$message.error(data.msg);
-          }
-        });
-      });
     },
   },
 };

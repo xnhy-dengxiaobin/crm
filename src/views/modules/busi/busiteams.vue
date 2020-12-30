@@ -2,7 +2,7 @@
   <div class="mod-config">
     <el-form :inline="true" :model="dataForm" @keyup.enter.native="getDataList()">
       <el-form-item>
-        <el-button v-if="isAuth('busi:busiteams:save')" type="primary" @click="addOrUpdateHandle()">新增</el-button>
+        <el-button type="primary" @click="addOrUpdateHandle()">新增</el-button>
         <!--<el-button v-if="isAuth('busi:busiteams:delete')" type="danger" @click="deleteHandle()" :disabled="dataListSelections.length <= 0">批量删除</el-button>-->
       </el-form-item>
     </el-form>
@@ -96,11 +96,17 @@
         label="团队名称">
       </el-table-column>
       <el-table-column
-        prop="projectId"
+        prop="area"
         header-align="center"
         align="center"
-        label="">
+        label="区域">
       </el-table-column>
+      <!--<el-table-column-->
+        <!--prop="projectId"-->
+        <!--header-align="center"-->
+        <!--align="center"-->
+        <!--label="">-->
+      <!--</el-table-column>-->
       <el-table-column
         fixed="right"
         header-align="center"
