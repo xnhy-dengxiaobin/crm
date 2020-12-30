@@ -7,6 +7,16 @@
     <el-form-item label="" prop="teamName">
       <el-input v-model="dataForm.teamName" placeholder="团队名称"></el-input>
     </el-form-item>
+    <el-form-item>
+      <el-select v-model="dataForm.area" clearable placeholder="区域">
+        <el-option
+          v-for="item in areas"
+          :key="item.value"
+          :label="item.value"
+          :value="item.value">
+        </el-option>
+      </el-select>
+    </el-form-item>
     <!--<el-form-item label="" prop="projectId">-->
       <!--<el-input v-model="dataForm.projectId" placeholder=""></el-input>-->
     <!--</el-form-item>-->
@@ -22,21 +32,45 @@
   export default {
     data () {
       return {
+        areas: [],
         visible: false,
         dataForm: {
           id: 0,
           teamName: '',
-          projectId: ''
+          projectId: '',
+          area: ''
         },
         dataRule: {
           teamName: [
-            { required: true, message: '名称不能为空', trigger: 'blur' }
+            { required: true, message: '名称不能为空', trigger: 'blur' },
+            { required: true, area: '区域不能为空', trigger: 'blur' }
           ]
         }
       }
     },
+    activated () {
+      this.getArea()
+    },
     methods: {
+      getArea() {
+        this.$http({
+          url: this.$http.adornUrl("/busi/syssetup/listByKey?key=区域"),
+          method: "get",
+          params: {},
+        }).then(({ data }) => {
+          if (data && data.code === 0) {
+            this.areas = data.list
+          }
+        });
+      },
       init (id) {
+        this.dataForm = {
+          id: 0,
+          teamName: '',
+          projectId: '',
+          area: ''
+        }
+        this.getArea()
         this.dataForm.id = id || 0
         this.visible = true
         this.$nextTick(() => {
@@ -50,6 +84,7 @@
               if (data && data.code === 0) {
                 this.dataForm.teamName = data.busiTeams.teamName
                 this.dataForm.projectId = data.busiTeams.projectId
+                this.dataForm.area = data.busiTeams.area
               }
             })
           }
@@ -65,7 +100,7 @@
               data: this.$http.adornData({
                 'id': this.dataForm.id || undefined,
                 'teamName': this.dataForm.teamName,
-                'projectId': this.dataForm.projectId
+                'area': this.dataForm.area
               })
             }).then(({data}) => {
               if (data && data.code === 0) {
