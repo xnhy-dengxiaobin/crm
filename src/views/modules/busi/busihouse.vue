@@ -1,12 +1,56 @@
 <template>
   <div class="mod-config">
     <el-form :inline="true" :model="dataForm" @keyup.enter.native="getDataList()">
+        <!--<el-input v-model="dataForm.key" placeholder="参数名" clearable></el-input>-->
       <el-form-item>
-        <el-input v-model="dataForm.key" placeholder="参数名" clearable></el-input>
+        <el-select v-model="dataForm.projectId"
+                   @change="selectProject()" clearable placeholder="项目">
+          <el-option
+            v-for="item in projectList"
+            :key="item.id"
+            :label="item.name"
+            :value="item.id">
+          </el-option>
+        </el-select>
       </el-form-item>
       <el-form-item>
-        <el-button @click="getDataList()">查询</el-button>
-        <!--<el-button v-if="isAuth('busi:busihouse:save')" type="primary" @click="addOrUpdateHandle()">新增</el-button>-->
+        <el-select v-model="dataForm.dong"  @change="selectDong()"
+                   clearable placeholder="楼栋">
+          <el-option
+            v-for="item in dongList"
+            :key="item.id"
+            :label="item.name"
+            :value="item.id">
+          </el-option>
+        </el-select>
+      </el-form-item>
+
+      <el-form-item>
+        <el-select v-model="dataForm.unit"
+                   clearable placeholder="单元">
+          <el-option
+            v-for="item in unitList"
+            :key="item.id"
+            :label="item.name"
+            :value="item.id">
+          </el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item>
+        <el-select v-model="dataForm.control"
+                   clearable placeholder="是否预销控">
+          <el-option
+            v-for="item in controlList"
+            :key="item.value"
+            :label="item.name"
+            :value="item.value">
+          </el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item>
+        <el-button @click="search()">查询</el-button>
+        <el-button v-if="isAuth('busi:busihouse:save')" type="primary" @click="toControl()">批量预销控</el-button>
+        <el-button v-if="isAuth('busi:busihouse:save')" type="dark" @click="doCancel()">批量取消预销控</el-button>
         <!--<el-button v-if="isAuth('busi:busihouse:delete')" type="danger" @click="deleteHandle()" :disabled="dataListSelections.length <= 0">批量删除</el-button>-->
       </el-form-item>
     </el-form>
@@ -29,16 +73,16 @@
         label="项目名称">
       </el-table-column>
       <el-table-column
-        prop="groupName"
-        header-align="center"
-        align="center"
-        label="组名">
-      </el-table-column>
-      <el-table-column
         prop="name"
         header-align="center"
         align="center"
         label="房间名称">
+      </el-table-column>
+      <el-table-column
+        prop="unit"
+        header-align="center"
+        align="center"
+        label="单元">
       </el-table-column>
       <el-table-column
         prop="houseType"
@@ -99,10 +143,12 @@
         align="center"
         label="状态">
         <template slot-scope="scope">
-          <p v-if="scope.row.status == '1'">待售</p>
-          <p v-if="scope.row.status == '10'">销控</p>
-          <p v-if="scope.row.status == '20'">认购</p>
-          <p v-if="scope.row.status == '30'">签约</p>
+          <span :style="colorStatus(scope.row)">
+            <p v-if="scope.row.status == '1' && scope.row.control !== 1">待售</p>
+            <p v-if="scope.row.status == '10' || scope.row.control === 1">销控</p>
+            <p v-if="scope.row.status == '20'">认购</p>
+            <p v-if="scope.row.status == '30'">签约</p>
+          </span>
         </template>
       </el-table-column>
       <el-table-column
@@ -119,8 +165,8 @@
         label="操作">
         <template slot-scope="scope">
           <el-button type="text" size="small" @click="" @click="queryLogs(scope.row)">销控记录</el-button>
-          <el-button type="text" size="small" @click="" v-if="scope.row.status == '1'" @click="toControl(scope.row)">设置销控</el-button>
-          <el-button style="color: red" type="text" size="small" v-if="scope.row.status == '10'" @click="doCancel(scope.row)">取消销控</el-button>
+          <!--<el-button type="text" size="small" @click="" v-if="scope.row.status == '1'" @click="toControl(scope.row)">设置销控</el-button>-->
+          <!--<el-button style="color: red" type="text" size="small" v-if="scope.row.status == '10'" @click="doCancel(scope.row)">取消销控</el-button>-->
           <!--<el-button type="text" size="small" @click="deleteHandle(scope.row.id)">删除</el-button>-->
         </template>
       </el-table-column>
@@ -143,7 +189,7 @@
       </el-input>
       <span slot="footer" class="dialog-footer">
       <el-button @click="controlDialogVisible = false">取消</el-button>
-      <el-button type="primary" @click="doControl(1)">确定</el-button>
+      <el-button type="primary" @click="doPlControl(1)">确定</el-button>
       </span>
     </el-dialog>
     <el-dialog title="销控记录" :visible.sync="logDialogVisible">
@@ -171,7 +217,9 @@
         controlDialogVisible: false,
         logDialogVisible: false,
         dataForm: {
-          key: ''
+          projectId: '',
+          dong: '',
+          unit: ''
         },
         dataList: [],
         pageIndex: 1,
@@ -181,7 +229,14 @@
         dataListSelections: [],
         addOrUpdateVisible: false,
         row: {},
-        logs: []
+        logs: [],
+        projectList: [],
+        dongList: [],
+        unitList: [],
+        controlList: [
+          {value: 1, name: '销控中'},
+          {value: 0, name: '未销控'}
+        ]
       }
     },
     components: {
@@ -189,8 +244,65 @@
     },
     activated () {
       this.getDataList()
+      this.queryProject()
     },
     methods: {
+      colorStatus(item) {
+        if (item.status === '10' || item.control === 1) {
+          return 'color: #1976d2'
+        }
+        if (item.status === '1') {
+          return 'color: #dadada;'
+        }
+        if (item.status === '20') {
+          return 'color: #f44336'
+        }
+        if (item.status === '30') {
+          return 'color: violet'
+        }
+      },
+      selectDong() {
+        this.dataForm.unit = ''
+        this.$http({
+          url: this.$http.adornUrl('/busi/busihouse/unitListByGroupId/' + this.dataForm.dong),
+          method: 'get',
+          params: {}
+        }).then(({data}) => {
+          if (data && data.code === 0) {
+            this.unitList = data.list
+          } else {
+            this.unitList = []
+          }
+        })
+      },
+      selectProject() {
+        console.log("========")
+        this.dataForm.dong = ''
+        this.$http({
+          url: this.$http.adornUrl("/busi/busihousegroup/listAdminByProjectId/" + this.dataForm.projectId),
+          method: 'get',
+          params: {}
+        }).then(({data}) => {
+          if (data && data.code === 0) {
+            this.dongList = data.list
+          } else {
+            this.dongList = []
+          }
+        })
+      },
+      queryProject() {
+        this.$http({
+          url: this.$http.adornUrl('/busi/busiproject/listParent'),
+          method: 'get',
+          params: {}
+        }).then(({data}) => {
+          if (data && data.code === 0) {
+            this.projectList = data.list
+          } else {
+            this.projectList = []
+          }
+        })
+      },
       queryLogs(row) {
         this.logDialogVisible = true
         this.$http({
@@ -205,22 +317,47 @@
           }
         })
       },
-      doCancel(row) {
+      doCancel() {
+        console.log("====")
+        this.remark = ''
+        this.houseIds = []
+        var i = true
+        var ms = null;
+        var s = false;
+        for (var index in this.dataListSelections) {
+          if (this.dataListSelections[index].control === 1) {
+            this.houseIds.push(this.dataListSelections[index].id)
+          } else {
+            if (this.dataListSelections[index].status === '10') {
+              s = true
+            }
+            ms = this.dataListSelections[index]
+            i = false
+            break
+          }
+        }
+        if (!i) {
+          if (s) {
+            this.$message.error(ms.name + "此房源为ERP销控无法取消")
+          } else {
+            this.$message.error(ms.name + "此房源无需取消销控")
+          }
+          return
+        }
         this.$confirm(`确认取消销控?`, '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          this.row = row
-          this.doControl(0)
+          this.doPlControl(0)
         })
       },
-      doControl(status) {
+      doPlControl(status) {
         this.$http({
           url: this.$http.adornUrl(`/busi/busicontrollog/save`),
           method: 'post',
           data: this.$http.adornData({
-            'houseId': this.row.id,
+            'houseIds': this.houseIds,
             'remark': this.remark,
             'controlStatus': status
           })
@@ -240,21 +377,39 @@
           }
         })
       },
-      toControl(row) {
+      toControl() {
+        console.log("====")
+        this.houseIds = []
+        var i = true
+        var ms = null;
+        for (var index in this.dataListSelections) {
+          if (this.dataListSelections[index].status === '1' && this.dataListSelections[index].control !== 1) {
+            this.houseIds.push(this.dataListSelections[index].id)
+          } else {
+            ms = this.dataListSelections[index]
+            i = false
+            break
+          }
+        }
+        if (!i) {
+          this.$message.error(ms.name + "此房源已是与销控状态")
+          return
+        }
         this.controlDialogVisible = true;
-        this.row = row
+      },
+      search() {
+        this.pageIndex = 1
+        this.getDataList();
       },
       // 获取数据列表
       getDataList () {
         this.dataListLoading = true
+        this.dataForm.page = this.pageIndex
+        this.dataForm.limit = this.pageSize
         this.$http({
           url: this.$http.adornUrl('/busi/busihouse/list'),
           method: 'get',
-          params: this.$http.adornParams({
-            'page': this.pageIndex,
-            'limit': this.pageSize,
-            'key': this.dataForm.key
-          })
+          params: this.$http.adornParams(this.dataForm)
         }).then(({data}) => {
           if (data && data.code === 0) {
             this.dataList = data.page.list
