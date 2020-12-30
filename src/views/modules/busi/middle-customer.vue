@@ -203,7 +203,7 @@
             v-if="isAuth('busi:prepare:update')"
             type="text"
             size="small"
-            @click="refresh(scope.row)"
+            @click="refresh(scope.row.id)"
             >刷新保护期</el-button
           >
           <!-- <el-button
