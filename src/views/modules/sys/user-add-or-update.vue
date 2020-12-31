@@ -334,8 +334,7 @@ export default {
     },
     queryProjects() {
       this.$http.get("/busi/busiproject/listParent", {
-        page: 0,
-        limit: 1000,
+        userId: 0,
         success: (data) => {
           this.projects = data.list;
         },
