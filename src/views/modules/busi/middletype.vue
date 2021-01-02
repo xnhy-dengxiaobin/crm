@@ -149,12 +149,13 @@ export default {
     getDataList() {
       this.dataListLoading = true;
       this.$http({
-        url: this.$http.adornUrl("/busi/middletype/lst"),
+        url: this.$http.adornUrl("/busi/middletype/list"),
         method: "get",
         params: this.$http.adornParams({
           page: this.pageIndex,
           limit: this.pageSize,
-          key: this.dataForm.key,
+          name: this.dataForm.name,
+          parentName: this.dataForm.parentName,
         }),
       }).then(({ data }) => {
         if (data && data.code === 0) {

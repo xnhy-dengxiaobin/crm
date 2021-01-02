@@ -347,7 +347,7 @@ export default {
     },
     queryProjects() {
       this.$http.get("/busi/busiproject/listParent", {
-        page: 0,
+        page: 1,
         limit: 1000,
         success: (data) => {
           this.projects = data.list;
@@ -365,7 +365,7 @@ export default {
     },
     queryMiddleType() {
       this.$http.get("/busi/middletype/list", {
-        page: 0,
+        page: 1,
         limit: 1000,
         success: (data) => {
           this.middleTypes = data.page.list;

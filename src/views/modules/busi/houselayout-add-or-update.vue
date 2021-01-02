@@ -205,7 +205,7 @@ export default {
     },
     queryProjects() {
       this.$http.get("/busi/busiproject/list", {
-        page: 0,
+        page: 1,
         limit: 1000,
         success: (data) => {
           this.projects = data.page.list;

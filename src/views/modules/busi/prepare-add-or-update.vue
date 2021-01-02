@@ -217,7 +217,7 @@ export default {
     },
     queryProjects() {
       this.$http.get("/busi/busiproject/listParent", {
-        page: 0,
+        page: 1,
         limit: 1000,
         success: (data) => {
           this.projects = data.list;
@@ -226,7 +226,7 @@ export default {
     },
     querySales() {
       this.$http.get("/sys/user/list", {
-        page: 0,
+        page: 1,
         limit: 1000,
         success: (data) => {
           this.users = data.page.list;
