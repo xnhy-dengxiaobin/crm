@@ -13,7 +13,7 @@
         ></el-input>
       </el-form-item>
       <el-form-item>
-        <el-button @click="getDataList()">查询</el-button>
+        <el-button @click="search()">查询</el-button>
         <el-button
           v-if="isAuth('sys:user:save')"
           type="primary"
@@ -181,6 +181,10 @@ export default {
     this.getDataList();
   },
   methods: {
+    search() {
+      this.pageIndex = 1
+      this.getDataList()
+    },
     // 获取数据列表
     getDataList() {
       this.dataListLoading = true;
