@@ -318,12 +318,14 @@ export default {
     getDataList() {
       this.dataListLoading = true;
       this.$http({
-        url: this.$http.adornUrl("/busi/prepare/list"),
-        method: "get",
-        params: this.$http.adornParams({
+        url: this.$http.adornUrl("/busi/prepare/lstPage"),
+        method: "post",
+        data: this.$http.adornData({
           page: this.pageIndex,
           limit: this.pageSize,
-          name: this.dataForm.name,
+          mobile: this.dataForm.mobile,
+          prepareStatus: this.dataForm.status,
+          busiStatus: this.dataForm.busiStatus,
         }),
       }).then(({ data }) => {
         if (data && data.code === 0) {
