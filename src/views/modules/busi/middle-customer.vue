@@ -139,7 +139,7 @@
       >
       </el-table-column>
       <el-table-column
-        prop="userId"
+        prop="userName"
         header-align="center"
         align="center"
         label="经纪人"
@@ -152,14 +152,9 @@
         label="渠道身份"
       >
       </el-table-column>
-      <el-table-column
-        prop="status"
-        header-align="center"
-        align="center"
-        label="客户状态"
-      >
+      <el-table-column header-align="center" align="center" label="客户状态">
         <template slot-scope="scope">
-          {{ scope.row.status | busiStatus }}
+          {{ scope.row.busiStatus | busiStatus }}
         </template>
       </el-table-column>
       <el-table-column
