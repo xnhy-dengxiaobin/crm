@@ -4,7 +4,7 @@
       <el-col :span="12">
         <el-card>
           <el-checkbox-group v-model="selectProject2" @change="changeProject2">
-            <el-checkbox :label="item.id" v-for="(item, index) in projects" :key="index">{{item.name}}</el-checkbox>
+            <el-checkbox :label="item.id" v-for="(item, index) in projects" :key="index">{{item.shortName}}</el-checkbox>
           </el-checkbox-group>
           <!--<el-select v-model="selectProject2" placeholder="请选择" @change="changeProject2">-->
             <!--<el-option-->
@@ -25,8 +25,8 @@
       </el-col>
       <el-col :span="12">
         <el-card>
-          <el-checkbox-group v-model="selectProject" @change="changeProject2">
-            <el-checkbox :label="item.id" v-for="(item, index) in projects" :key="index">{{item.name}}</el-checkbox>
+          <el-checkbox-group v-model="selectProject" @change="changeProject">
+            <el-checkbox :label="item.id" v-for="(item, index) in projects" :key="index">{{item.shortName}}</el-checkbox>
           </el-checkbox-group>
           <div id="J_chartPieBox" class="chart-box"></div>
           <el-radio-group v-model="unit" @change="changeUnit">
@@ -148,7 +148,7 @@
       changeUnit2(value) {
         console.log(this.unit)
         this.xData2 = [];
-        this.yData = {
+        this.yData2 = {
           zrdf: [],
           qdkh: [],
           ldx: [],
@@ -425,7 +425,7 @@
       },
       queryStatistics(endDate, fun) {
         this.$http({
-          url: this.$http.adornUrl('/busi/manager/busicustomer/statisticsCom?projectId=' + this.selectProject2 + "&unit=" + this.unit + "&endDate=" + endDate),
+          url: this.$http.adornUrl('/busi/manager/busicustomer/statisticsCom?projectId=' + this.selectProject + "&unit=" + this.unit + "&endDate=" + endDate),
           method: 'get',
           params: {}
         }).then(({data}) => {

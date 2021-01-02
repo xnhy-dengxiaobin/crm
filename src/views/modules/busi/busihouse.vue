@@ -292,7 +292,7 @@
       },
       queryProject() {
         this.$http({
-          url: this.$http.adornUrl('/busi/busiproject/listParent'),
+          url: this.$http.adornUrl('/busi/busiproject/list2000ByParentId'),
           method: 'get',
           params: {}
         }).then(({data}) => {
