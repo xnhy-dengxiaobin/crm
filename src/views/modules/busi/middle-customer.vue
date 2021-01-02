@@ -15,7 +15,7 @@
           <el-option
             v-for="project in projects"
             :key="project.id"
-            :label="project.name"
+            :label="project.shortName"
             :value="project.id"
           >
           </el-option>
