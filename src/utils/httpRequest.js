@@ -165,4 +165,12 @@ http.post = (
   );
 };
 
+http.doGet = param => {
+  http.get("/report/execBusiness", param);
+};
+
+http.doPost = param => {
+  http.post("/report/execBusiness", param);
+};
+
 export default http;
