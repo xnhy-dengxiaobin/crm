@@ -43,7 +43,7 @@ export default class DataUtil {
     return this.vue.$http.doPost(param);
   }
 
-  //异步验证方法
+  // 异步验证方法
   // check(p) {
   //   return this.query(p).pipe(
   //     map(p.validFunc)
@@ -69,12 +69,7 @@ export default class DataUtil {
       menuId: this.menuId,
       buttonId: INSERT_BUTTON_ID,
       hideLoading: p.hideLoading,
-      datas: [
-        {
-          datasetId: p.datasetId,
-          rows: [p.item]
-        }
-      ],
+      datas: datas,
       success: data => {
         this.processSaveReturn(p, data);
       },
@@ -133,7 +128,7 @@ export default class DataUtil {
     this.vue.$http.doPost(param);
   }
 
-  //剔除数据中没有修改过的项
+  // 剔除数据中没有修改过的项
   clearDatas = function(items) {
     let datas = [];
     for (let i in items) {
@@ -192,8 +187,8 @@ export default class DataUtil {
       path: this.path,
       actionId: this.actionId,
       menuId: this.menuId,
-      buttonId: p.buttonId,
-      stepGroupId: p.stepGroupId,
+      buttonId: UPDATE_BUTTON_ID,
+      stepGroupId: "grv",
       steps: p.steps,
       dataParam: p.dataParam,
       hideLoading: p.hideLoading,
@@ -209,11 +204,11 @@ export default class DataUtil {
   }
 
   processSaveReturn(p, data) {
-    if (this.httpService.checkResult(data)) {
+    if (data && data.code) {
       if (p.success) {
         p.success(data);
       } else {
-        let message = this.httpService.getMessage(data);
+        let message = data.message;
         if (message) {
           this.vue.info(message);
         } else {
@@ -227,7 +222,7 @@ export default class DataUtil {
 
   processErrorReturn(p, error) {
     if (!error) {
-      //即使调用成功, 也总是会先进这里, 只好把undefined排除掉
+      // 即使调用成功, 也总是会先进这里, 只好把undefined排除掉
       return;
     }
     if (p.error) {

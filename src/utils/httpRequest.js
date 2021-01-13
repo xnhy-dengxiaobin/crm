@@ -4,6 +4,7 @@ import router from "@/router";
 import qs from "qs";
 import merge from "lodash/merge";
 import { clearLoginInfo } from "@/utils";
+import { META } from "./constant";
 
 const http = axios.create({
   timeout: 1000 * 30,
@@ -70,6 +71,15 @@ http.adornUrl = actionName => {
   );
 };
 
+http.adornUrl2 = actionName => {
+  // 非生产环境 && 开启代理, 接口前缀统一使用[/proxyApi/]前缀做代理拦截!
+  return (
+    (process.env.NODE_ENV !== "production" && process.env.OPEN_PROXY
+      ? "/proxyApi/"
+      : window.SITE_CONFIG.baseUrl2) + actionName
+  );
+};
+
 /**
  * get请求参数处理
  * @param {*} params 参数对象
@@ -98,8 +108,17 @@ http.adornData = (data = {}, openDefultdata = true, contentType = "json") => {
   return contentType === "json" ? JSON.stringify(data) : qs.stringify(data);
 };
 
+http.adornData2 = (data = {}, openDefultdata = true, contentType = "json") => {
+  var defaults = {
+    t: new Date().getTime(),
+    systemNo: META.systemNo
+  };
+  data = openDefultdata ? merge(defaults, data) : data;
+  return contentType === "json" ? JSON.stringify(data) : qs.stringify(data);
+};
+
 http.get = (action, params = {}, openDefultParams = true) => {
-  let url = http.adornUrl(action);
+  let url = http.adornUrl2(action);
   let success = params.success;
   let error = params.error;
   delete params.success;
@@ -112,7 +131,7 @@ http.get = (action, params = {}, openDefultParams = true) => {
     method: "get"
   }).then(
     ({ data }) => {
-      if (data && data.code === 0) {
+      if (data && data.code === 1) {
         if (success) {
           success(data);
         }
@@ -135,12 +154,12 @@ http.post = (
   openDefultdata = true,
   contentType = "json"
 ) => {
-  let url = http.adornUrl(action);
+  let url = http.adornUrl2(action);
   let success = data.success;
   let error = data.error;
   delete data.success;
   delete data.error;
-  let body = http.adornData(data, openDefultdata, contentType);
+  let body = http.adornData2(data, openDefultdata, contentType);
 
   http({
     url: url,
@@ -148,7 +167,7 @@ http.post = (
     method: "post"
   }).then(
     ({ data }) => {
-      if (data && data.code === 0) {
+      if (data && data.code === 1) {
         if (success) {
           success(data);
         }
