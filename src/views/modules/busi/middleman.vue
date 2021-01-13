@@ -303,7 +303,7 @@ export default {
         this.dataForm.start = this.dataForm.createTimes[0];
         this.dataForm.start = moment(this.dataForm.start).format("YYYY-MM-DD");
         if (this.dataForm.createTimes.length > 1) {
-          this.dataForm.end = this.dataForm.createTimes[0];
+          this.dataForm.end = this.dataForm.createTimes[1];
           this.dataForm.end = moment(this.dataForm.end).format("YYYY-MM-DD");
         }
       }
