@@ -118,6 +118,73 @@ http.adornData2 = (data = {}, openDefultdata = true, contentType = "json") => {
 };
 
 http.get = (action, params = {}, openDefultParams = true) => {
+  let url = http.adornUrl(action);
+  let success = params.success;
+  let error = params.error;
+  delete params.success;
+  delete params.error;
+  let prms = http.adornParams(params, openDefultParams);
+
+  http({
+    url: url,
+    params: prms,
+    method: "get"
+  }).then(
+    ({ data }) => {
+      if (data && data.code === 0) {
+        if (success) {
+          success(data);
+        }
+      } else {
+        console.log(data.msg);
+        if (error) {
+          error(data);
+        }
+      }
+    },
+    ({ err }) => {
+      console.log(err);
+    }
+  );
+};
+
+http.post = (
+  action = "",
+  data = {},
+  openDefultdata = true,
+  contentType = "json"
+) => {
+  let url = http.adornUrl(action);
+  let success = data.success;
+  let error = data.error;
+  delete data.success;
+  delete data.error;
+  let body = http.adornData(data, openDefultdata, contentType);
+
+  http({
+    url: url,
+    data: body,
+    method: "post"
+  }).then(
+    ({ data }) => {
+      if (data && data.code === 0) {
+        if (success) {
+          success(data);
+        }
+      } else {
+        console.log(data.msg);
+        if (error) {
+          error(data);
+        }
+      }
+    },
+    ({ err }) => {
+      console.log(err);
+    }
+  );
+};
+
+http.get2 = (action, params = {}, openDefultParams = true) => {
   let url = http.adornUrl2(action);
   let success = params.success;
   let error = params.error;
@@ -148,7 +215,7 @@ http.get = (action, params = {}, openDefultParams = true) => {
   );
 };
 
-http.post = (
+http.post2 = (
   action = "",
   data = {},
   openDefultdata = true,
@@ -185,11 +252,11 @@ http.post = (
 };
 
 http.doGet = param => {
-  http.get("/report/execBusiness", param);
+  http.get2("/report/execBusiness", param);
 };
 
 http.doPost = param => {
-  http.post("/report/execBusiness", param);
+  http.post2("/report/execBusiness", param);
 };
 
 export default http;
