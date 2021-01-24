@@ -21,41 +21,54 @@
         width="50">
       </el-table-column>
       <el-table-column
-        prop="customerInfo"
+        prop="ywbldate"
+        header-align="center"
+        align="center"
+        label="办理时间">
+      </el-table-column>
+      <el-table-column
+        prop="cstname"
         header-align="center"
         align="center"
         label="客户">
       </el-table-column>
       <el-table-column
-        prop="orderId"
+        prop="csttel"
         header-align="center"
         align="center"
-        label="订单ID">
+        label="电话">
       </el-table-column>
       <el-table-column
-        prop="floorArea"
+        prop="roominfo"
         header-align="center"
         align="center"
-        label="面积">
+        label="房间">
       </el-table-column>
       <el-table-column
-        prop="totalPricesDs"
-        header-align="center"
-        align="center"
-        label="总价">
-      </el-table-column>
-      <el-table-column
-        prop="payForm"
-        header-align="center"
-        align="center"
-        label="付款方式">
-      </el-table-column>
-      <el-table-column
-        prop="type"
+        prop="producttype"
         header-align="center"
         align="center"
         label="类型">
       </el-table-column>
+      <el-table-column
+        prop="bldarea"
+        header-align="center"
+        align="center"
+        label="建筑面积">
+      </el-table-column>
+      <el-table-column
+        prop="rmbcjtotal"
+        header-align="center"
+        align="center"
+        label="成交金额">
+      </el-table-column>
+      <el-table-column
+        prop="payformname"
+        header-align="center"
+        align="center"
+        label="付款方式">
+      </el-table-column>
+
       <el-table-column
         fixed="right"
         header-align="center"
@@ -63,7 +76,7 @@
         width="150"
         label="操作">
         <template slot-scope="scope">
-          <el-button type="text" size="small" @click="complete(scope.row.orderId)">资料收齐</el-button>
+          <el-button type="text" size="small" @click="complete(scope.row.tradeguid,scope.row.cstname)">资料收齐</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -210,11 +223,11 @@
         this.dataListSelections = val
       },
       // 删除
-      complete (id) {
+      complete (id, name) {
         var ids = id ? [id] : this.dataListSelections.map(item => {
           return item.id
         })
-        this.$confirm(`确定[id=${ids.join(',')}][${id ? '资料已收齐' : '资料已收齐'}]?`, '提示', {
+        this.$confirm(`确定[${name}][${id ? '资料已收齐' : '资料已收齐'}]?`, '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'

@@ -75,6 +75,7 @@
       <el-table-column
         prop="appRole"
         header-align="center"
+        :formatter="appRoleFormatter"
         align="center"
         label="APP角色">
       </el-table-column>
@@ -184,6 +185,13 @@ export default {
     search() {
       this.pageIndex = 1
       this.getDataList()
+    },
+    appRoleFormatter (row, column) {
+      var appRole = row.appRole
+      if (appRole) {
+        return appRole === 1 ? '销售经理' : appRole === 2 ? '置业顾问' : '异常';
+      }
+      return ''
     },
     // 获取数据列表
     getDataList() {
