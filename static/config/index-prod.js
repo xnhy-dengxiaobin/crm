@@ -6,6 +6,7 @@
 
   // api接口请求地址
   window.SITE_CONFIG["baseUrl"] = "https://scmczd.net/crm";
+  window.SITE_CONFIG["baseUrl2"] = "https://scmczd.net/data-server";
   // window.SITE_CONFIG["baseUrl"] = "https://scmczd.net/server";
 
   // cdn地址 = 域名 + 版本号

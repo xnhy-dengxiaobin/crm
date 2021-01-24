@@ -121,7 +121,7 @@
       >
       </el-table-column>
       <el-table-column
-        v-if="dataForm.status === 0 || dataForm.status === 10"
+        v-if="dataForm.status === '0' || dataForm.status === '10'"
         prop=""
         header-align="center"
         align="center"
@@ -129,12 +129,18 @@
       >
       </el-table-column>
       <el-table-column
-        v-if="dataForm.status === 0 || dataForm.status === 10"
-        prop="projectId"
+        v-if="dataForm.status === '0' || dataForm.status === '10'"
         header-align="center"
         align="center"
         label="客户意向"
       >
+        <template slot-scope="scope">
+          <span>{{
+            scope.row.projectNames
+              ? scope.row.projectNames
+              : scope.row.projectName
+          }}</span>
+        </template>
       </el-table-column>
       <el-table-column
         v-if="dataForm.status === 0 || dataForm.status === 10"
@@ -145,7 +151,7 @@
       >
       </el-table-column
       ><el-table-column
-        v-if="dataForm.status === 0 || dataForm.status === 10"
+        v-if="dataForm.status === '0' || dataForm.status === '10'"
         prop=""
         header-align="center"
         align="center"
@@ -161,7 +167,7 @@
       >
       </el-table-column>
       <el-table-column
-        v-if="dataForm.status === 10"
+        v-if="dataForm.status === '10'"
         prop=""
         header-align="center"
         align="center"
@@ -169,7 +175,7 @@
       >
       </el-table-column>
       <el-table-column
-        v-if="dataForm.status === 20"
+        v-if="dataForm.status === '20'"
         prop=""
         header-align="center"
         align="center"
@@ -177,7 +183,7 @@
       >
       </el-table-column>
       <el-table-column
-        v-if="dataForm.status === 20"
+        v-if="dataForm.status === '20'"
         prop=""
         header-align="center"
         align="center"
@@ -185,7 +191,7 @@
       >
       </el-table-column>
       <el-table-column
-        v-if="dataForm.status === 20"
+        v-if="dataForm.status === '20'"
         prop=""
         header-align="center"
         align="center"
@@ -295,7 +301,7 @@ export default {
     return {
       dataForm: {
         name: "",
-        status: 0,
+        status: "0",
       },
       dataList: [],
       pageIndex: 1,
@@ -318,7 +324,7 @@ export default {
     getDataList() {
       this.dataListLoading = true;
       this.$http({
-        url: this.$http.adornUrl("/busi/prepare/lstPage"),
+        url: this.$http.adornUrl("/busi/prepare/listPage4Admin"),
         method: "post",
         data: this.$http.adornData({
           page: this.pageIndex,
