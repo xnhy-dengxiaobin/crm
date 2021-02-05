@@ -107,13 +107,6 @@
       >
       </el-table-column>
       <el-table-column
-        prop="matchUserName"
-        header-align="center"
-        align="center"
-        label="顾问"
-      >
-      </el-table-column>
-      <el-table-column
         prop="middleTypeName"
         header-align="center"
         align="center"
@@ -176,7 +169,7 @@
       </el-table-column>
       <el-table-column
         v-if="dataForm.status === '20'"
-        prop=""
+        prop="matchUserName"
         header-align="center"
         align="center"
         label="业务员"
@@ -189,10 +182,13 @@
         align="center"
         label="分配时间"
       >
+        <template slot-scope="scope">
+          <span>{{ scope.row.matchUserTime | date }}</span>
+        </template>
       </el-table-column>
       <el-table-column
         v-if="dataForm.status === '20'"
-        prop=""
+        prop="assigner"
         header-align="center"
         align="center"
         label="分配人"
