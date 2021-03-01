@@ -88,7 +88,7 @@ export default {
               if (res && res.code) {
                 this.dataForm.name = res.data.name;
                 this.dataForm.sourceUserName = res.data.source_user_name;
-                this.dataForm.sourceMobile = res.data.source_user_mobile;
+                this.dataForm.sourceMobile = res.data.source_mobile;
               } else {
                 this.dataForm.name = "";
                 this.dataForm.sourceUserName = "";
@@ -142,8 +142,6 @@ export default {
       if (!name) {
         return;
       }
-      var customers = [];
-
       this.dataUtil.exec({
         steps: [{ type: "grv", name: "society/SocietyStep" }],
         dataParam: {

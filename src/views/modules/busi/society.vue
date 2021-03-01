@@ -137,7 +137,7 @@
       :current-page="pageIndex"
       :page-sizes="[10, 20, 50, 100]"
       :page-size="pageSize"
-      :total="totalPage"
+      :total="totalItems"
       layout="total, sizes, prev, pager, next, jumper"
     >
     </el-pagination>
@@ -171,6 +171,7 @@ export default {
       pageIndex: 1,
       pageSize: 10,
       totalPage: 0,
+      totalItems: 0,
       dataListLoading: false,
       dataListSelections: [],
       addOrUpdateVisible: false,
@@ -207,7 +208,7 @@ export default {
         success: (res) => {
           if (res && res.code) {
             this.dataList = res.data.page.list;
-            this.totalPage = res.data.page.totalPage;
+            this.totalItems = res.data.page.totalItems;
           } else {
             this.dataList = [];
             this.totalPage = 0;
