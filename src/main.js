@@ -10,6 +10,7 @@ import "@/assets/scss/index.scss";
 import filter from "@/filter";
 import httpRequest from "@/utils/httpRequest"; // api: https://github.com/axios/axios
 import { isAuth } from "@/utils";
+import ennUtil from "@/utils/enn-util";
 import cloneDeep from "lodash/cloneDeep";
 import { Card, Timeline, TimelineItem } from "element-ui";
 Vue.use(Card)
@@ -20,6 +21,7 @@ Vue.use(VueCookie);
 Vue.config.productionTip = false;
 
 Vue.use(filter);
+Vue.use(ennUtil);
 
 // 非生产环境, 适配mockjs模拟数据                 // api: https://github.com/nuysoft/Mock
 if (process.env.NODE_ENV !== "production") {

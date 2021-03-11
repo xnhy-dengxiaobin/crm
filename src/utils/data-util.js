@@ -228,7 +228,7 @@ export default class DataUtil {
     if (p.error) {
       p.error(error);
     } else {
-      this.vue.error(error);
+      this.vue.error(error && error.message ? error.message : "执行服务出错");
     }
   }
 }

@@ -1,21 +1,17 @@
 <template>
   <div class="middleman-list">
-    <el-form
-      class="condition"
-      :inline="true"
-      :model="dataForm"
-      @keyup.enter.native="query()"
-    >
+    <el-form class="condition"
+             :inline="true"
+             :model="dataForm"
+             @keyup.enter.native="query()">
       <el-form-item>
-        <el-date-picker
-          v-model="dataForm.createTimes"
-          type="daterange"
-          :picker-options="pickerOptions"
-          range-separator="至"
-          start-placeholder="开始日期"
-          end-placeholder="结束日期"
-          align="right"
-        >
+        <el-date-picker v-model="dataForm.createTimes"
+                        type="daterange"
+                        :picker-options="pickerOptions"
+                        range-separator="至"
+                        start-placeholder="开始日期"
+                        end-placeholder="结束日期"
+                        align="right">
         </el-date-picker>
       </el-form-item>
       <el-form-item>
@@ -25,199 +21,167 @@
     <div class="content">
       <div class="item">
         <div class="title">报备数</div>
-        <el-table
-          :data="dataList"
-          border
-          @selection-change="selectionChangeHandle"
-          style="width: 100%"
-        >
-          <el-table-column type="index" width="50" label="序号">
+        <el-table :data="dataList"
+                  border
+                  @selection-change="selectionChangeHandle"
+                  style="width: 100%">
+          <el-table-column type="index"
+                           width="50"
+                           label="序号">
           </el-table-column>
-          <el-table-column
-            header-align="center"
-            align="center"
-            label="经纪人名称"
-          >
+          <el-table-column header-align="center"
+                           align="center"
+                           label="经纪人名称">
             <template slot-scope="scope">
               <span>{{ scope.row.user_name }}</span>
             </template>
           </el-table-column>
-          <el-table-column
-            prop="mobile"
-            header-align="center"
-            align="center"
-            label="经纪人电话"
-          >
+          <el-table-column prop="mobile"
+                           header-align="center"
+                           align="center"
+                           label="经纪人电话">
           </el-table-column>
-          <el-table-column
-            prop="cnt"
-            header-align="center"
-            align="center"
-            label="报备数"
-          >
+          <el-table-column prop="cnt"
+                           header-align="center"
+                           align="center"
+                           label="报备数">
           </el-table-column>
         </el-table>
-        <el-pagination
-          @size-change="sizeChangeHandle"
-          @current-change="currentChangeHandle"
-          :current-page="pageIndex"
-          :page-sizes="[10, 20, 50, 100]"
-          :page-size="pageSize"
-          :total="totalPage"
-          layout="total, sizes, prev, pager, next, jumper"
-        >
+        <el-pagination @size-change="sizeChangeHandle"
+                       @current-change="currentChangeHandle"
+                       :current-page="pageIndex"
+                       :page-sizes="[10, 20, 50, 100]"
+                       :page-size="pageSize"
+                       :total="totalPage"
+                       layout="total, sizes, prev, pager, next, jumper">
         </el-pagination>
       </div>
       <div class="item">
         <div class="title">成功报备数</div>
-        <el-table :data="dataList1" border style="width: 100%">
-          <el-table-column
-            header-align="center"
-            align="center"
-            label="经纪人名称"
-          >
+        <el-table :data="dataList1"
+                  border
+                  style="width: 100%">
+          <el-table-column header-align="center"
+                           align="center"
+                           label="经纪人名称">
             <template slot-scope="scope">
               <span>{{ scope.row.user_name }}</span>
             </template>
           </el-table-column>
-          <el-table-column
-            prop="mobile"
-            header-align="center"
-            align="center"
-            label="经纪人电话"
-          >
+          <el-table-column prop="mobile"
+                           header-align="center"
+                           align="center"
+                           label="经纪人电话">
           </el-table-column>
-          <el-table-column
-            prop="cnt"
-            header-align="center"
-            align="center"
-            label="成功数"
-          >
+          <el-table-column prop="cnt"
+                           header-align="center"
+                           align="center"
+                           label="成功数">
           </el-table-column>
         </el-table>
-        <el-pagination
-          @size-change="sizeChangeHandle1"
-          @current-change="currentChangeHandle1"
-          :current-page="pageIndex1"
-          :page-sizes="[10, 20, 50, 100]"
-          :page-size="pageSize"
-          :total="totalPage1"
-          layout="total, sizes, prev, pager, next, jumper"
-        >
+        <el-pagination @size-change="sizeChangeHandle1"
+                       @current-change="currentChangeHandle1"
+                       :current-page="pageIndex1"
+                       :page-sizes="[10, 20, 50, 100]"
+                       :page-size="pageSize"
+                       :total="totalPage1"
+                       layout="total, sizes, prev, pager, next, jumper">
         </el-pagination>
       </div>
       <div class="item">
         <div class="title">到访数</div>
-        <el-table :data="dataList2" border style="width: 100%">
-          <el-table-column
-            header-align="center"
-            align="center"
-            label="经纪人名称"
-          >
+        <el-table :data="dataList2"
+                  border
+                  style="width: 100%">
+          <el-table-column header-align="center"
+                           align="center"
+                           label="经纪人名称">
             <template slot-scope="scope">
               <span>{{ scope.row.user_name }}</span>
             </template>
           </el-table-column>
-          <el-table-column
-            prop="mobile"
-            header-align="center"
-            align="center"
-            label="经纪人电话"
-          >
+          <el-table-column prop="mobile"
+                           header-align="center"
+                           align="center"
+                           label="经纪人电话">
           </el-table-column>
-          <el-table-column
-            prop="cnt"
-            header-align="center"
-            align="center"
-            label="到访数"
-          >
+          <el-table-column prop="cnt"
+                           header-align="center"
+                           align="center"
+                           label="到访数">
           </el-table-column>
         </el-table>
-        <el-pagination
-          @size-change="sizeChangeHandle2"
-          @current-change="currentChangeHandle2"
-          :current-page="pageIndex2"
-          :page-sizes="[10, 20, 50, 100]"
-          :page-size="pageSize"
-          :total="totalPage2"
-          layout="total, sizes, prev, pager, next, jumper"
-        >
+        <el-pagination @size-change="sizeChangeHandle2"
+                       @current-change="currentChangeHandle2"
+                       :current-page="pageIndex2"
+                       :page-sizes="[10, 20, 50, 100]"
+                       :page-size="pageSize"
+                       :total="totalPage2"
+                       layout="total, sizes, prev, pager, next, jumper">
         </el-pagination>
       </div>
       <div class="item">
         <div class="title">认购数</div>
-        <el-table :data="dataList3" border style="width: 100%">
-          <el-table-column
-            header-align="center"
-            align="center"
-            label="经纪人名称"
-          >
+        <el-table :data="dataList3"
+                  border
+                  style="width: 100%">
+          <el-table-column header-align="center"
+                           align="center"
+                           label="经纪人名称">
             <template slot-scope="scope">
               <span>{{ scope.row.user_name }}</span>
             </template>
           </el-table-column>
-          <el-table-column
-            prop="mobile"
-            header-align="center"
-            align="center"
-            label="经纪人电话"
-          >
+          <el-table-column prop="mobile"
+                           header-align="center"
+                           align="center"
+                           label="经纪人电话">
           </el-table-column>
-          <el-table-column
-            prop="cnt"
-            header-align="center"
-            align="center"
-            label="认购数"
-          >
+          <el-table-column prop="cnt"
+                           header-align="center"
+                           align="center"
+                           label="认购数">
           </el-table-column>
         </el-table>
-        <el-pagination
-          @size-change="sizeChangeHandle3"
-          @current-change="currentChangeHandle3"
-          :current-page="pageIndex3"
-          :page-sizes="[10, 20, 50, 100]"
-          :page-size="pageSize"
-          :total="totalPage3"
-          layout="total, sizes, prev, pager, next, jumper"
-        >
+        <el-pagination @size-change="sizeChangeHandle3"
+                       @current-change="currentChangeHandle3"
+                       :current-page="pageIndex3"
+                       :page-sizes="[10, 20, 50, 100]"
+                       :page-size="pageSize"
+                       :total="totalPage3"
+                       layout="total, sizes, prev, pager, next, jumper">
         </el-pagination>
       </div>
       <div class="item">
         <div class="title">签约数</div>
-        <el-table :data="dataList4" border style="width: 100%">
-          <el-table-column
-            header-align="center"
-            align="center"
-            label="经纪人名称"
-          >
+        <el-table :data="dataList4"
+                  border
+                  style="width: 100%">
+          <el-table-column header-align="center"
+                           align="center"
+                           label="经纪人名称">
             <template slot-scope="scope">
               <span>{{ scope.row.user_name }}</span>
             </template>
           </el-table-column>
-          <el-table-column
-            prop="mobile"
-            header-align="center"
-            align="center"
-            label="经纪人电话"
-          >
+          <el-table-column prop="mobile"
+                           header-align="center"
+                           align="center"
+                           label="经纪人电话">
           </el-table-column>
-          <el-table-column
-            prop="cnt"
-            header-align="center"
-            align="center"
-            label="签约数"
-          >
+          <el-table-column prop="cnt"
+                           header-align="center"
+                           align="center"
+                           label="签约数">
           </el-table-column>
         </el-table>
-        <el-pagination
-          @size-change="sizeChangeHandle4"
-          @current-change="currentChangeHandle4"
-          :current-page="pageIndex4"
-          :page-sizes="[10, 20, 50, 100]"
-          :page-size="pageSize"
-          :total="totalPage4"
-          layout="total, sizes, prev, pager, next, jumper"
-        >
+        <el-pagination @size-change="sizeChangeHandle4"
+                       @current-change="currentChangeHandle4"
+                       :current-page="pageIndex4"
+                       :page-sizes="[10, 20, 50, 100]"
+                       :page-size="pageSize"
+                       :total="totalPage4"
+                       layout="total, sizes, prev, pager, next, jumper">
         </el-pagination>
       </div>
       <div class="item"></div>
@@ -229,7 +193,7 @@
 import moment from "moment";
 import DataUtil from "../../../utils/data-util";
 export default {
-  data() {
+  data () {
     return {
       actionId: "report",
       menuId: "report",
@@ -267,7 +231,7 @@ export default {
         shortcuts: [
           {
             text: "本周",
-            onClick(picker) {
+            onClick (picker) {
               const end = moment();
               const start = moment().day(1);
               picker.$emit("pick", [start, end]);
@@ -275,7 +239,7 @@ export default {
           },
           {
             text: "本月",
-            onClick(picker) {
+            onClick (picker) {
               const end = moment();
               const year = end.year();
               const month = end.month();
@@ -285,7 +249,7 @@ export default {
           },
           {
             text: "今年",
-            onClick(picker) {
+            onClick (picker) {
               const y = moment().year();
               const firstOfYear = moment().year(y).month(0).date(1);
               const end = new Date();
@@ -295,7 +259,7 @@ export default {
           },
           {
             text: "上周",
-            onClick(picker) {
+            onClick (picker) {
               const end = moment().day(0);
               const start = moment().day(-6);
               picker.$emit("pick", [start, end]);
@@ -303,7 +267,7 @@ export default {
           },
           {
             text: "上月",
-            onClick(picker) {
+            onClick (picker) {
               const y = moment().year();
               const m = moment().month();
               const firstOfMonth = moment().year(y).month(m).date(1);
@@ -316,7 +280,7 @@ export default {
           },
           {
             text: "去年",
-            onClick(picker) {
+            onClick (picker) {
               const y = moment().year();
               const firstOfYear = moment().year(y).month(0).date(0);
               const end = firstOfYear;
@@ -333,19 +297,19 @@ export default {
     };
   },
   components: {},
-  mounted() {
+  mounted () {
     this.query();
     this.queryMiddleType();
   },
   methods: {
-    query() {
+    query () {
       this.getDataList();
       this.getDataList1();
       this.getDataList2();
       this.getDataList3();
       this.getDataList4();
     },
-    processDateRange() {
+    processDateRange () {
       if (this.dataForm.createTimes && this.dataForm.createTimes.length > 0) {
         this.dataForm.start = this.dataForm.createTimes[0];
         this.dataForm.start = moment(this.dataForm.start).format("YYYY-MM-DD");
@@ -356,7 +320,7 @@ export default {
       }
     },
     // 获取数据列表
-    async getDataList() {
+    async getDataList () {
       await this.processDateRange();
 
       this.dataUtil.exec({
@@ -382,7 +346,7 @@ export default {
       });
     },
     // 获取数据列表
-    async getDataList1() {
+    async getDataList1 () {
       await this.processDateRange();
 
       this.dataUtil.exec({
@@ -409,7 +373,7 @@ export default {
       });
     },
     // 获取数据列表
-    async getDataList2() {
+    async getDataList2 () {
       await this.processDateRange();
 
       this.dataUtil.exec({
@@ -436,7 +400,7 @@ export default {
       });
     },
     // 获取数据列表
-    async getDataList3() {
+    async getDataList3 () {
       await this.processDateRange();
 
       this.dataUtil.exec({
@@ -463,7 +427,7 @@ export default {
       });
     },
     // 获取数据列表
-    async getDataList4() {
+    async getDataList4 () {
       await this.processDateRange();
 
       this.dataUtil.exec({
@@ -490,78 +454,78 @@ export default {
       });
     },
     // 每页数
-    sizeChangeHandle(val) {
+    sizeChangeHandle (val) {
       this.pageSize = val;
       this.pageIndex = 1;
       this.getDataList();
     },
     // 当前页
-    currentChangeHandle(val) {
+    currentChangeHandle (val) {
       this.pageIndex = val;
       this.getDataList();
     },
     // 每页数
-    sizeChangeHandle1(val) {
+    sizeChangeHandle1 (val) {
       this.pageSize = val;
       this.pageIndex1 = 1;
       this.getDataList1();
     },
     // 当前页
-    currentChangeHandle1(val) {
+    currentChangeHandle1 (val) {
       this.pageIndex1 = val;
       this.getDataList1();
     },
     // 每页数
-    sizeChangeHandle2(val) {
+    sizeChangeHandle2 (val) {
       this.pageSize = val;
       this.pageIndex2 = 1;
       this.getDataList2();
     },
     // 当前页
-    currentChangeHandle2(val) {
+    currentChangeHandle2 (val) {
       this.pageIndex2 = val;
       this.getDataList2();
     },
     // 每页数
-    sizeChangeHandle3(val) {
+    sizeChangeHandle3 (val) {
       this.pageSize = val;
       this.pageIndex3 = 1;
       this.getDataList3();
     },
     // 当前页
-    currentChangeHandle3(val) {
+    currentChangeHandle3 (val) {
       this.pageIndex3 = val;
       this.getDataList3();
     },
     // 每页数
-    sizeChangeHandle4(val) {
+    sizeChangeHandle4 (val) {
       this.pageSize = val;
       this.pageIndex4 = 1;
       this.getDataList4();
     },
     // 当前页
-    currentChangeHandle4(val) {
+    currentChangeHandle4 (val) {
       this.pageIndex4 = val;
       this.getDataList4();
     },
     // 多选
-    selectionChangeHandle(val) {
+    selectionChangeHandle (val) {
       this.dataListSelections = val;
     },
     // 新增 / 修改
-    addOrUpdateHandle(id) {
+    addOrUpdateHandle (id) {
       this.addOrUpdateVisible = true;
       this.$nextTick(() => {
         this.$refs.addOrUpdate.init(id);
       });
     },
     // 删除
-    deleteHandle(id) {
+    deleteHandle (id) {
       var userIds = id
         ? [id]
         : this.dataListSelections.map((item) => {
-            return item.userId;
-          });
+          return item.userId;
+        });
       this.$confirm(
         `确定对[id=${userIds.join(",")}]进行[${id ? "删除" : "批量删除"}]操作?`,
         "提示",
@@ -591,15 +555,15 @@ export default {
             }
           });
         })
-        .catch(() => {});
+        .catch(() => { });
     },
     // 删除
-    auditHandle(id, auditStatus) {
+    auditHandle (id, auditStatus) {
       var userIds = id
         ? [id]
         : this.dataListSelections.map((item) => {
-            return item.userId;
-          });
+          return item.userId;
+        });
       this.$confirm(
         `确定对[id=${userIds.join(",")}]进行[${id ? "审核" : "批量审核"}]操作?`,
         "提示",
@@ -632,9 +596,9 @@ export default {
             }
           });
         })
-        .catch(() => {});
+        .catch(() => { });
     },
-    batchOp(command) {
+    batchOp (command) {
       switch (command) {
         case "del":
           this.deleteHandle();
@@ -647,7 +611,7 @@ export default {
           break;
       }
     },
-    queryMiddleType() {
+    queryMiddleType () {
       this.$http.get("/busi/middletype/list", {
         page: 1,
         limit: 1000,
@@ -656,7 +620,7 @@ export default {
         },
       });
     },
-    listMiddleType(queryString, cb) {
+    listMiddleType (queryString, cb) {
       let results = this.middleTypes.filter((p) => {
         if (!queryString) {
           return true;
@@ -665,12 +629,12 @@ export default {
       });
       cb(results);
     },
-    handleSelect(item) {
+    handleSelect (item) {
       this.dataForm.middleTypeId = item.id;
       this.dataForm.middleTypeName = item.name;
     },
   },
-  created() {
+  created () {
     this.dataUtil = new DataUtil(this);
   },
 };
